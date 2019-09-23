@@ -24,6 +24,7 @@ sudo pacman -S ctags
 ## 覆盖文件
 
 ```bash
+cd $(本仓库目录)
 cp -r .vim/plugin ~/.vim/
 cp .vimrc ~/.vimrc
 ```
