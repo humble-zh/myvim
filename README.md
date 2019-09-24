@@ -12,13 +12,13 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 ### ubuntu
 
 ```bash
-sudo apt-get install ctags
+sudo apt-get install ctags cmake
 ```
 
 ### manjaro
 
 ```bash
-sudo pacman -S ctags
+sudo pacman -S ctags cmake
 ```
 
 ## 覆盖文件
