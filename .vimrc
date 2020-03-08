@@ -43,51 +43,77 @@ noremap n nzz
 noremap # #zz
 noremap N Nzz
 noremap <LEADER><CR> :nohlsearch<CR>
+noremap <LEADER><TAB> /<TODO><CR>ca<
 
+" markdown
 noremap <LEADER>cr i## C->R 0x
 noremap <LEADER>rc i## R->C 0x
 noremap <LEADER>2 i&emsp;&emsp;<ESC>
 noremap <LEADER>< i ***<ESC>
 noremap <LEADER>> i*** <ESC>
-noremap <LEADER><TAB> /<++><CR>ca<
-noremap <LEADER>p2cmd 0f("byi("add/p2cmd_t;<CR>"aP>>iP2CMD_<++> = , <ESC>F=l"bp/P2DataStruct<CR>"aPItypedef struct{ <ESC>op2head_t head;<ESC>ouint8_t unixtimestamp[P2LEN4UNIXTIMESTAMP];<ESC>"apI}p2<++><ESC>"bpa_t; <ESC>V0%y%o<ESC>pf{%o<CR><ESC>/P2Function<CR>"aPIextern size_t p2rcpack<ESC>"bpa(void *dptr, time_t unixtimestamp, <++>); <ESC>gg/<++><CR>ca<
-noremap <LEADER>p2fnct 0df f;xf("ayi(o{<CR>p2r<ESC>"apa_t<ESC>b"byeA *pkt = (<ESC>pa *)dptr;<CR>*(uint32_t *)pkt->unixtimestamp = unixtimestamp;<CR><CR>return sizeof(<ESC>"bpa);<CR>}<CR><ESC>
-noremap <LEADER>len mm^w"ayew"bdi[iP2LEN4<ESC>"apgUiw"cyiw/P2MacrosDefine<CR>ko#define <ESC>"cpa (<ESC>"bpa)<ESC>'mj
-noremap <LEADER>s8 ^w"ayeo*(uint8_t *)pkt-><ESC>"apa = <ESC>"apa;<CR>prtcl_dbg("<ESC>"apa%u len%u", *(uint8_t *)pkt-><ESC>"apa, P2LEN4<ESC>"apgUiwA);<ESC>
-noremap <LEADER>s16 ^w"ayeo*(uint16_t *)pkt-><ESC>"apa = <ESC>"apa;<CR>prtcl_dbg("<ESC>"apa%u len%u", *(uint16_t *)pkt-><ESC>"apa, P2LEN4<ESC>"apgUiwA);<ESC>
-noremap <LEADER>s32 ^w"ayeo*(uint32_t *)pkt-><ESC>"apa = <ESC>"apa;<CR>prtcl_dbg("<ESC>"apa%u len%u", *(uint32_t *)pkt-><ESC>"apa, P2LEN4<ESC>"apgUiwA);<ESC>
-noremap <LEADER>ss ^w"ayeoif(<ESC>"apa) memcpy(pkt-><ESC>"apa, <ESC>"apa, P2LEN4<ESC>"apgUiwA);<CR>prtcl_dbg("<ESC>"apa'%s' len%u", <ESC>"apa, P2LEN4<ESC>"apgUiwA);<ESC>
-noremap <LEADER>pl /return<CR>f("ayi(Oprtcl_dbg("pktlen%u", sizeof(<ESC>"apa));<ESC>
 
-noremap <LEADER>pt :call TitleDet()<CR>
+noremap <LEADER>len mm^w"ayew"bdi[iP2LEN4<ESC>"apgUiw"cyiw/P2MacrosDefine<CR>ko#define <ESC>"cpa (<ESC>"bpa)<ESC>'mj
+
+" 结构体成员赋值
+noremap <LEADER>s8 ^w"ayeO*(uint8_t *)pkt-><ESC>"apa = <ESC>"apa;<ESC>jdd
+noremap <LEADER>s16 ^w"ayeO*(uint16_t *)pkt-><ESC>"apa = <ESC>"apa;<ESC>jdd
+noremap <LEADER>s32 ^w"ayeO*(uint32_t *)pkt-><ESC>"apa = <ESC>"apa;<ESC>jdd
+noremap <LEADER>ss ^w"ayeOif(<ESC>"apa) memcpy(pkt-><ESC>"apa, <ESC>"apa, P2LEN4<ESC>"apgUiwA);<ESC>jdd
+
 function AddTitle()
-    call append(0,"\#!/usr/bin/env python3.5")
-    call append(1,"# -*- coding: utf-8 -*-")
-    call append(2,"")
-    call append(3,"'''\\")
-    call append(4,"Filename: ".expand("%:t"))
-    call append(5,"Description: <++>")
-    call append(6,"Last modified: humble ".strftime("%Y%m%d %H:%M"))
-    call append(7,"Usage:")
-    call append(8,"  <++>")
-    call append(9,"'''")
-    call append(10,"")
-    call append(11,"# import os")
-    call append(12,"import sys")
-    call append(13,"")
-    call append(14,"__author__ = \"humble\"")
-    call append(15,"")
-    call append(16,"")
-    call append(17,"if __name__ == '__main__':")
-    call append(18,"    print(__doc__)")
+    if &filetype == 'python'
+        call append(0,"# -*- coding: utf-8 -*-")
+        call append(1,"")
+        call append(2,"'''\\")
+        call append(3,"Filename: ".expand("%:t"))
+        call append(4,"Description: <TODO>")
+        call append(5,"Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(6,"Usage:")
+        call append(7,"  python3 ".expand("%:t")." <TODO>")
+        call append(8,"'''")
+        call append(9,"")
+    elseif &filetype == 'sh'
+        call append(0,"#!/bin/bash")
+        call append(1,"# -*- coding: utf-8 -*-")
+        call append(2,"#Filename: ".expand("%:t"))
+        call append(3,"#Description: <TODO>")
+        call append(4,"#Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(5,"#Usage:")
+        call append(6,"#  sh ".expand("%:t")." <TODO>")
+        call append(7,"")
+    elseif &filetype == 'cpp'
+        call append(0,"/* Filename: ".expand("%:t"))
+        call append(1," * Description: <TODO>")
+        call append(2," * Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(3," */")
+    elseif &filetype == 'c'
+        call append(0,"/* Filename: ".expand("%:t"))
+        call append(1," * Description: <TODO>")
+        call append(2," * Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(3," */")
+    elseif &filetype == 'h'
+        call append(0,"/* Filename: ".expand("%:t"))
+        call append(1," * Description: <TODO>")
+        call append(2," * Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(3," */")
+    elseif &filetype == 'md'
+        echohl WarningMsg | echo "not .md file" | echohl None
+    else
+        echohl WarningMsg | echo "not support file to hello()" | echohl None
+        return
+    endif
     echohl WarningMsg | echo "Successful in adding copyright." | echohl None
 endf
 
 function UpdateTitle()
-     execute '/Filename/s@:.*$@\=": ".expand("%:t")@'
-     normal jj0
-     execute '/Last modified/s@:.*$@\=strftime(": humble %Y%m%d %H:%M")@'
-     echohl WarningMsg | echo "Successful in updating the copyright." | echohl None
+    execute '/Filename/s@:.*$@\=": ".expand("%:t")@'
+    execute '/Last modified/s@:.*$@\=strftime(": humble %Y%m%d %H:%M")@'
+    if &filetype == 'python'
+        execute '/  python3 /s@3 .*py@\="3 ".expand("%:t")@'
+    elseif &filetype == 'sh'
+        execute '/#  sh /s@#  sh.*sh@\="#  sh ".expand("%:t")@'
+    endif
+    echohl WarningMsg | echo "Successful in updating the copyright." | echohl None
 endfunction
 
 function TitleDet()
@@ -102,6 +128,175 @@ function TitleDet()
     endwhile
     call AddTitle()
 endfunction
+
+function Hello()
+    if &filetype == 'python'
+        call TitleDet()
+        call append(10,"import logging")
+        call append(11,"import os")
+        call append(12,"import sys")
+        call append(13,"import time")
+        call append(14,"")
+        call append(15,"__author__ = 'humble'")
+        call append(16,"")
+        call append(17,"")
+        call append(18,"def _usage_exit():")
+        call append(19,"    print(__doc__)")
+        call append(20,"    sys.exit(1)")
+        call append(21,"")
+        call append(22,"")
+        call append(23,"def _loginit():")
+        call append(24,"    _logdir = 'log'")
+        call append(25,"    _datetime = time.strftime('%Y%m%d%H%M%S', time.localtime())")
+        call append(26,"    if not os.path.exists(_logdir):")
+        call append(27,"        os.mkdir(_logdir)")
+        call append(28,"    logging.basicConfig(level=logging.DEBUG,")
+        call append(29,"                        format='%(asctime)s %(filename)s' +")
+        call append(30,"                        '[line:%(lineno)d] %(levelname)s %(message)s',")
+        call append(31,"                        datefmt='%Y/%m/%d %H:%M:%S', filename=_logdir + '/' +")
+        call append(32,"                        _datetime + os.path.basename(__file__).split('.')[0] +")
+        call append(33,"                        '.log', filemode='a')")
+        call append(34,"    console = logging.StreamHandler()")
+        call append(35,"    console.setLevel(logging.INFO)")
+        call append(36,"    # console.setLevel(logging.WARNING)")
+        call append(37,"    # console.setLevel(logging.DEBUG)")
+        call append(38,"    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')")
+        call append(39,"    console.setFormatter(formatter)")
+        call append(40,"    logging.getLogger('').addHandler(console)")
+        call append(41,"")
+        call append(42,"")
+        call append(43,"if __name__ == '__main__':")
+        call append(44,"    # check argv")
+        call append(45,"    _loginit()")
+        call append(46,"    # import ipdb; ipdb.set_trace()")
+        call append(47,"    logging.info('+++++++++++++++start++++++++++++++')")
+        call append(48,"    logging.debug('world')")
+        call append(49,"    logging.info('hello world')")
+        call append(50,"    logging.warning('hello world')")
+        call append(51,"    logging.error('what')")
+    elseif &filetype == 'sh'
+        call TitleDet()
+        call append(8,"function usage(){")
+        call append(9,"    echo hello")
+        call append(10,"}")
+        call append(11,"")
+        call append(12,"usage")
+    elseif &filetype == 'c'
+        call TitleDet()
+        call append(4,"#include <stdio.h>")
+        call append(5,"#include <stdlib.h>")
+        call append(6,"")
+        call append(7,"static void usage(void);")
+        call append(8,"")
+        call append(9,"int main(int argc, char **argv)")
+        call append(10,"{")
+        call append(11,"    if(argc != 1){")
+        call append(12,"        fprintf(stderr, \"argc !=1\");")
+        call append(13,"        usage();")
+        call append(14,"        exit(1);")
+        call append(15,"    }")
+        call append(16,"")
+        call append(17,"    <TODO>")
+        call append(18,"    return 0;")
+        call append(19,"}")
+        call append(20,"")
+        call append(21,"static void usage(void)")
+        call append(22,"{")
+        call append(23,"#define USAGE \"Usage:\\n\\")
+        call append(24,"  Helloworld\\n\"")
+        call append(25,"    printf(USAGE);")
+        call append(26,"}")
+    elseif &filetype == 'h'
+        echohl WarningMsg | echo "not .h file" | echohl None
+    elseif &filetype == 'h'
+        echohl WarningMsg | echo "not .md file" | echohl None
+    else
+        echohl WarningMsg | echo "not support file to hello()" | echohl None
+    endif
+endf
+noremap <LEADER>hello :call Hello()<CR>
+
+function Paho()
+    call TitleDet()
+    call append(10,"import logging")
+    call append(11,"# import json")
+    call append(12,"import os")
+    call append(13,"import sys")
+    call append(14,"import time")
+    call append(15,"import paho.mqtt.client as mqtt")
+    call append(16,"from libevpower import libevpower")
+    call append(17,"")
+    call append(18,"__author__ = 'humble'")
+    call append(19,"")
+    call append(20,"")
+    call append(21,"def _usage_exit():")
+    call append(22,"    print(__doc__)")
+    call append(23,"    sys.exit(1)")
+    call append(24,"")
+    call append(25,"")
+    call append(26,"def _loginit():")
+    call append(27,"    _logdir = 'log'")
+    call append(28,"    _datetime = time.strftime('%Y%m%d%H%M%S', time.localtime())")
+    call append(29,"    if not os.path.exists(_logdir):")
+    call append(30,"        os.mkdir(_logdir)")
+    call append(31,"    logging.basicConfig(level=logging.DEBUG,")
+    call append(32,"                        format='%(asctime)s %(filename)s' +")
+    call append(33,"                        '[line:%(lineno)d] %(levelname)s %(message)s',")
+    call append(34,"                        datefmt='%Y/%m/%d %H:%M:%S', filename=_logdir + '/' +")
+    call append(35,"                        _datetime + os.path.basename(__file__).split('.')[0] +")
+    call append(36,"                        '.log', filemode='a')")
+    call append(37,"    console = logging.StreamHandler()")
+    call append(38,"    console.setLevel(logging.INFO)")
+    call append(39,"    # console.setLevel(logging.DEBUG)")
+    call append(40,"    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')")
+    call append(41,"    console.setFormatter(formatter)")
+    call append(42,"    logging.getLogger('').addHandler(console)")
+    call append(43,"")
+    call append(44,"")
+    call append(45,"def _on_connect(_client, _df, _flags, _rc):")
+    call append(46,"    '''The callback for when the client receives a CONNACK response from the")
+    call append(47,"    server.")
+    call append(48,"    '''")
+    call append(49,"    logging.debug('Connected result%s', _rc)")
+    call append(50,"    logging.info('client.subscribe Message/Router/ot19')")
+    call append(51,"    _client.subscribe('Message/Router/ot19')")
+    call append(52,"")
+    call append(53,"")
+    call append(54,"def _on_message(_client, _df, _msg):")
+    call append(55,"    '''The callback for when a PUBLISH message is received from the server.'''")
+    call append(56,"    logging.debug('_on_message')")
+    call append(57,"    logging.info(_msg.payload.decode().replace('\\'', '\\\"'))")
+    call append(58,"")
+    call append(59,"")
+    call append(60,"def _on_publish(_client, _df, _mid):")
+    call append(61,"    '''_on_publish'''")
+    call append(62,"")
+    call append(63,"")
+    call append(64,"def _on_disconnect(_client, _df, _rc):")
+    call append(65,"    '''_on_disconnect'''")
+    call append(66,"    logging.debug('Mqtt disconnect && loop stop')")
+    call append(67,"    _client.loop_stop()")
+    call append(68,"")
+    call append(69,"")
+    call append(70,"if __name__ == '__main__':")
+    call append(71,"    _CLIENT = mqtt.Client('<TODO>', True)")
+    call append(72,"    _CLIENT.on_connect = _on_connect")
+    call append(73,"    _CLIENT.on_message = _on_message")
+    call append(74,"    _CLIENT.on_publish = _on_publish")
+    call append(75,"    _CLIENT.on_disconnect = _on_disconnect")
+    call append(76,"    _CLIENT.username_pw_set('<TODO>', '<TODO>')")
+    call append(77,"    _CLIENT.connect_async(libevpower.EMQXSERVADDR, 1883, 60)")
+    call append(78,"    _CLIENT.loop_start()")
+    call append(79,"")
+    call append(80,"    while True:")
+    call append(81,"        pass")
+endf
+
+noremap <LEADER>paho :call Paho()<CR>
+
+noremap <LEADER>t mm:call AddTitle()<CR>:w<CR>'m
+noremap <LEADER>o mm:call UpdateTitle()<CR>:w<CR>'m
+
 
 " 编辑
 " set backup
@@ -119,6 +314,7 @@ map \l :set splitright<CR>:vsplit<CR>
 
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Specify a directory for plugins
 " - For Neovim: ~/.local/share/nvim/plugged
 " - Avoid using standard Vim directory names like 'plugin'
@@ -126,7 +322,12 @@ call plug#begin('~/.vim/plugged')
 
 " Make sure you use single quotes
 
+" 美化
+Plug 'mhinz/vim-startify'
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'w0ng/vim-hybrid'
+Plug 'Yggdroot/indentLine'
 Plug 'airblade/vim-gitgutter'
 " Plug 'fholgado/minibufexpl.vim' " 这种安装方式似乎对config 'fholgado/minibufexpl.vim' 无效
 Plug 'vim-scripts/a.vim'
@@ -148,6 +349,10 @@ Plug 'tyru/open-browser.vim'
 Plug 'ycm-core/YouCompleteMe'
 " Initialize plugin system
 call plug#end()
+
+" config 'w0ng/vim-hybrid'
+set background=dark
+colorscheme hybrid
 
 " config 'fholgado/minibufexpl.vim'
 let g:miniBufExplMapWindowNavVim = 1
@@ -244,3 +449,4 @@ let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 "let g:ycm_key_invoke_completion = ['<C-Space>']
 " 停止显示补全列表(防止列表影响视野), 可以按<C-Space>重新弹出
 "let g:ycm_key_list_stop_completion = ['<C-y>']
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
