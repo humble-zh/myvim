@@ -1,4 +1,4 @@
-# myvim
+# myvimrc
 
 ## 安装[vim-plug](https://github.com/junegunn/vim-plug/)
 
@@ -21,12 +21,18 @@ sudo apt-get install ctags cmake
 sudo pacman -S ctags cmake
 ```
 
-## 覆盖文件
+## 使用配置文件
 
 ```bash
-cd $(本仓库目录)
+cd $(当前目录)
+ln -s $(pwd)/.vimrc ~/.vimrc
 cp -r .vim/plugin ~/.vim/
-cp .vimrc ~/.vimrc
+```
+
+### 如果装了neovim
+```bash
+ln -s ~/.vim ~/.config/nvim
+ln -s ~/.vimrc ~/.config/nvim/init.vim
 ```
 
 ## 打开vim安装插件
