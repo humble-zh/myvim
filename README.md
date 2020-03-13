@@ -48,3 +48,7 @@ vim
 cd ~/.vim/plugged/YouCompleteMe
 python3 install.py --clang-completer
 ```
+
+```bash
+pip3 install neovim
+```
