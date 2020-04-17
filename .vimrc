@@ -330,7 +330,7 @@ Plug 'w0ng/vim-hybrid'
 " Plug 'Yggdroot/indentLine'
 Plug 'airblade/vim-gitgutter'
 " Plug 'fholgado/minibufexpl.vim' " 这种安装方式似乎对config 'fholgado/minibufexpl.vim' 无效
-Plug 'vim-scripts/a.vim'
+" Plug 'vim-scripts/a.vim' " 写代码时space+is就冲突了<LEADER>is，所以停用掉
 Plug 'vim-scripts/taglist.vim'
 Plug 'vim-scripts/winmanager'
 Plug 'vim-scripts/ag.vim'
