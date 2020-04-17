@@ -44,11 +44,33 @@ noremap # #zz
 noremap N Nzz
 noremap <LEADER><CR> :nohlsearch<CR>
 noremap <LEADER><TAB> /<TODO><CR>ca<
+noremap <LEADER>1 :1b<CR>
+noremap <LEADER>2 :2b<CR>
+noremap <LEADER>3 :3b<CR>
+noremap <LEADER>4 :4b<CR>
+noremap <LEADER>h1 :set nosplitright<CR>:vsplit<CR>:1b<CR>
+noremap <LEADER>h2 :set nosplitright<CR>:vsplit<CR>:2b<CR>
+noremap <LEADER>h3 :set nosplitright<CR>:vsplit<CR>:3b<CR>
+noremap <LEADER>h4 :set nosplitright<CR>:vsplit<CR>:4b<CR>
+noremap <LEADER>j1 :set splitbelow<CR>:split<CR>:1b<CR>
+noremap <LEADER>j2 :set splitbelow<CR>:split<CR>:2b<CR>
+noremap <LEADER>j3 :set splitbelow<CR>:split<CR>:3b<CR>
+noremap <LEADER>j4 :set splitbelow<CR>:split<CR>:4b<CR>
+noremap <LEADER>k1 :set nosplitbelow<CR>:split<CR>:1b<CR>
+noremap <LEADER>k2 :set nosplitbelow<CR>:split<CR>:2b<CR>
+noremap <LEADER>k3 :set nosplitbelow<CR>:split<CR>:3b<CR>
+noremap <LEADER>k4 :set nosplitbelow<CR>:split<CR>:4b<CR>
+noremap <LEADER>l1 :set splitright<CR>:vsplit<CR>:1b<CR>
+noremap <LEADER>l2 :set splitright<CR>:vsplit<CR>:2b<CR>
+noremap <LEADER>l3 :set splitright<CR>:vsplit<CR>:3b<CR>
+noremap <LEADER>l4 :set splitright<CR>:vsplit<CR>:4b<CR>
+nnoremap <leader>ev :vsp $MYVIMRC<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " markdown
 noremap <LEADER>cr i## C->R 0x
 noremap <LEADER>rc i## R->C 0x
-noremap <LEADER>2 i&emsp;&emsp;<ESC>
+noremap <LEADER>s2 i&emsp;&emsp;<ESC>
 noremap <LEADER>< i ***<ESC>
 noremap <LEADER>> i*** <ESC>
 
