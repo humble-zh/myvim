@@ -370,7 +370,7 @@ let Tlist_Exit_OnlyWindow=1
 
 " config 'vim-scripts/winmanager'
 let g:winManagerWindowLayout='FileExplorer|TagList'
-nmap wm :WMToggle<cr>
+nmap \w :WMToggle<cr>
 
 " config 'brooth/far.vim'
 set lazyredraw
