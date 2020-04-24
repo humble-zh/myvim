@@ -363,6 +363,7 @@ Plug 'itchyny/vim-cursorword'
 Plug 'lfv89/vim-interestingwords'
 Plug 'dense-analysis/ale'
 Plug 'farmergreg/vim-lastplace' " 记住上次编辑的位置，下次打开自动定位
+Plug 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 
 " markdown
@@ -439,6 +440,9 @@ let g:ale_fixers = {
 let g:ale_fix_on_save = 1
 let g:ale_sign_error = '✗'
 let g:ale_sign_warning = '⚡'
+
+" config 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
+let g:session_autosave = 'no'
 
 " config markdown
 let g:vim_markdown_folding_disabled = 1
