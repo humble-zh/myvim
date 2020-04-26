@@ -365,6 +365,7 @@ Plug 'dense-analysis/ale'
 Plug 'farmergreg/vim-lastplace' " 记住上次编辑的位置，下次打开自动定位
 Plug 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
+Plug 'junegunn/vim-easy-align' " vipga= 或 gaip=
 
 " markdown
 Plug 'godlygeek/tabular'
@@ -441,8 +442,14 @@ let g:ale_fix_on_save = 1
 let g:ale_sign_error = '✗'
 let g:ale_sign_warning = '⚡'
 
-" config 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
+" config 'xolox/vim-misc' 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 let g:session_autosave = 'no'
+
+" config 'junegunn/vim-easy-align'
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 
 " config markdown
 let g:vim_markdown_folding_disabled = 1
