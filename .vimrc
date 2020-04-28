@@ -367,6 +367,7 @@ Plug 'farmergreg/vim-lastplace' " 记住上次编辑的位置，下次打开自�
 Plug 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'junegunn/vim-easy-align' " vipga= 或 gaip=
+Plug 'tpope/vim-abolish'
 
 " markdown
 Plug 'godlygeek/tabular'
