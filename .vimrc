@@ -355,14 +355,15 @@ Plug 'airblade/vim-gitgutter'
 " Plug 'vim-scripts/a.vim' " 写代码时space+is就冲突了<LEADER>is，所以停用掉
 Plug 'vim-scripts/taglist.vim'
 Plug 'vim-scripts/winmanager'
-Plug 'vim-scripts/ag.vim'
+Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 Plug 'terryma/vim-multiple-cursors'
-Plug 'brooth/far.vim'
-Plug 'easymotion/vim-easymotion'
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'brooth/far.vim' " 在项目中替换多文件内容
+Plug 'easymotion/vim-easymotion' " 强化版检索式移动
+Plug 'ctrlpvim/ctrlp.vim' " 快速打开文件
 Plug 'itchyny/vim-cursorword'
-Plug 'lfv89/vim-interestingwords'
-Plug 'dense-analysis/ale'
+Plug 'lfv89/vim-interestingwords' " 同时高亮检索跳转 <leader>k
+Plug 'dense-analysis/ale' " 异步静态检测插件，减少代码缺陷，写出更规范和干净的代码
+" Plug 'vim-autoformat' " 代码格式化插件。规范代码格式，能用工具就用工具，把更多心思放在代码逻辑本身而不是调整格式上(同时避免了不同成员关于代码风格的争论)
 Plug 'farmergreg/vim-lastplace' " 记住上次编辑的位置，下次打开自动定位
 Plug 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
@@ -375,7 +376,7 @@ Plug 'plasticboy/vim-markdown'
 Plug 'kannokanno/previm'
 Plug 'tyru/open-browser.vim'
 
-Plug 'ycm-core/YouCompleteMe'
+Plug 'ycm-core/YouCompleteMe' "cd ~/.vim/plugged/YouCompleteMe/;./install.py --clang-completer
 " Initialize plugin system
 call plug#end()
 
