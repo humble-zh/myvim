@@ -376,7 +376,7 @@ Plug 'plasticboy/vim-markdown'
 Plug 'kannokanno/previm'
 Plug 'tyru/open-browser.vim'
 
-Plug 'ycm-core/YouCompleteMe' "cd ~/.vim/plugged/YouCompleteMe/;./install.py --clang-completer
+Plug 'ycm-core/YouCompleteMe' "sudo apt install build-essential cmake python3-dev;cd ~/.vim/plugged/YouCompleteMe/;./install.py --clang-completer
 " Initialize plugin system
 call plug#end()
 
