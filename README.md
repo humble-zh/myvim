@@ -50,5 +50,9 @@ python3 install.py --clang-completer
 ```
 
 ```bash
+ln -s $(pwd)/ycm_extra_conf.py ~/.ycm_extra_conf.py
+```
+
+```bash
 pip3 install neovim
 ```
