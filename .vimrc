@@ -345,16 +345,16 @@ call plug#begin('~/.vim/plugged')
 " Make sure you use single quotes
 
 " 美化
-Plug 'mhinz/vim-startify'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'w0ng/vim-hybrid'
+Plug 'mhinz/vim-startify' " vim启动显示母牛
+Plug 'vim-airline/vim-airline' " 状态栏
+Plug 'vim-airline/vim-airline-themes' " 状态栏主题
+Plug 'w0ng/vim-hybrid' " 主题
 " Plug 'Yggdroot/indentLine'
-Plug 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter' " 在行标左边显示增减改钉行
 " Plug 'fholgado/minibufexpl.vim' " 这种安装方式似乎对config 'fholgado/minibufexpl.vim' 无效
 " Plug 'vim-scripts/a.vim' " 写代码时space+is就冲突了<LEADER>is，所以停用掉
 Plug 'vim-scripts/taglist.vim'
-Plug 'vim-scripts/winmanager'
+Plug 'vim-scripts/winmanager' " 窗口管理
 Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 Plug 'terryma/vim-multiple-cursors'
 Plug 'brooth/far.vim' " 在项目中替换多文件内容
@@ -367,8 +367,9 @@ Plug 'dense-analysis/ale' " 异步静态检测插件，减少代码缺陷，写�
 Plug 'farmergreg/vim-lastplace' " 记住上次编辑的位置，下次打开自动定位
 Plug 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
-Plug 'junegunn/vim-easy-align' " vipga= 或 gaip=
-Plug 'tpope/vim-abolish'
+Plug 'junegunn/vim-easy-align' " vipga= 或 gaip= 对齐
+Plug 'tpope/vim-abolish' " snake_case(crs) MixedCase(crm) camelCase(crc) snake_case(crs) UPPER_CASE(cru) dash-case(cr-) dot.case(cr.) space case (cr<space>) Title Case (crt) are all just 3 keystrokes away.
+Plug 'vim-utils/vim-man' " 在vim内查看man
 
 " markdown
 Plug 'godlygeek/tabular'
@@ -453,6 +454,9 @@ let g:session_autosave = 'no'
 xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
+
+"config 'vim-utils/vim-man' " 在vim内查看man
+map <leader>v :set splitright<CR><Plug>(Vman)
 
 " config markdown
 let g:vim_markdown_folding_disabled = 1
