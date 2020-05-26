@@ -350,11 +350,14 @@ Plug 'vim-airline/vim-airline' " 状态栏
 Plug 'vim-airline/vim-airline-themes' " 状态栏主题
 Plug 'w0ng/vim-hybrid' " 主题
 " Plug 'Yggdroot/indentLine'
-Plug 'airblade/vim-gitgutter' " 在行标左边显示增减改钉行
+Plug 'airblade/vim-gitgutter' " 直接左边显示有改动的行
+" Plug 'tpope/vim-fugitive' " git快捷命令(好像跟其他插件冲突了？)
+" Plug 'junegunn/gv.vim' " git快捷命令(好像跟其他插件冲突了？)
 " Plug 'fholgado/minibufexpl.vim' " 这种安装方式似乎对config 'fholgado/minibufexpl.vim' 无效
 " Plug 'vim-scripts/a.vim' " 写代码时space+is就冲突了<LEADER>is，所以停用掉
-Plug 'vim-scripts/taglist.vim'
+Plug 'vim-scripts/taglist.vim' " 文件预览，文件内跳转
 Plug 'vim-scripts/winmanager' " 窗口管理
+" Plug 'majutsushi/tagbar' " 文件预览，文件内跳转(与'vim-scripts/taglist.vim'重复)
 Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 Plug 'terryma/vim-multiple-cursors'
 Plug 'brooth/far.vim' " 在项目中替换多文件内容
@@ -370,6 +373,8 @@ Plug 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手�
 Plug 'junegunn/vim-easy-align' " vipga= 或 gaip= 对齐
 Plug 'tpope/vim-abolish' " snake_case(crs) MixedCase(crm) camelCase(crc) snake_case(crs) UPPER_CASE(cru) dash-case(cr-) dot.case(cr.) space case (cr<space>) Title Case (crt) are all just 3 keystrokes away.
 Plug 'vim-utils/vim-man' " 在vim内查看man
+Plug 'lilydjwg/fcitx.vim' " vim下中文输入法切换
+
 
 " markdown
 Plug 'godlygeek/tabular'
@@ -401,6 +406,9 @@ let Tlist_Exit_OnlyWindow=1
 " config 'vim-scripts/winmanager'
 let g:winManagerWindowLayout='FileExplorer|TagList'
 nmap \w :WMToggle<cr>
+
+" config 'majutsushi/tagbar' " 文件预览，文件内跳转(与'vim-scripts/taglist.vim'重复)
+" nmap <F8> :TagbarToggle<CR>
 
 " config 'brooth/far.vim'
 set lazyredraw
@@ -457,6 +465,28 @@ nmap ga <Plug>(EasyAlign)
 
 "config 'vim-utils/vim-man' " 在vim内查看man
 map <leader>v :set splitright<CR><Plug>(Vman)
+
+" config 'lilydjwg/fcitx.vim' " vim下中文输入法切换
+let g:input_toggle = 1
+function! Fcitx2en()
+    let s:input_status = system("fcitx-remote")
+    if s:input_status == 2
+        let g:input_toggle = 1
+        let l:a = system("fcitx-remote -c")
+    endif
+endfunction
+
+function! Fcitx2zh()
+    let s:input_status = system("fcitx-remote")
+    if s:input_status != 2 && g:input_toggle == 1
+        let l:a = system("fcitx-remote -o")
+        let g:input_toggle = 0
+    endif
+endfunction
+
+set timeoutlen=150
+autocmd InsertLeave * call Fcitx2en()
+autocmd InsertEnter * call Fcitx2zh()
 
 " config markdown
 let g:vim_markdown_folding_disabled = 1
