@@ -66,6 +66,7 @@ noremap <LEADER>l3 :set splitright<CR>:vsplit<CR>:3b<CR>
 noremap <LEADER>l4 :set splitright<CR>:vsplit<CR>:4b<CR>
 nnoremap <leader>ev :vsp $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
+iab xtime <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
 
 " markdown
 noremap <LEADER>cr i## C->R 0x
@@ -484,9 +485,9 @@ function! Fcitx2zh()
     endif
 endfunction
 
-set timeoutlen=150
+" set timeoutlen=150
 autocmd InsertLeave * call Fcitx2en()
-autocmd InsertEnter * call Fcitx2zh()
+" autocmd InsertEnter * call Fcitx2zh()
 
 " config markdown
 let g:vim_markdown_folding_disabled = 1
