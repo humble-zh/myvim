@@ -66,7 +66,8 @@ noremap <LEADER>l3 :set splitright<CR>:vsplit<CR>:3b<CR>
 noremap <LEADER>l4 :set splitright<CR>:vsplit<CR>:4b<CR>
 nnoremap <leader>ev :vsp $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
-iab xtime <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
+" iab xtime <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
+iab xtime <c-r>=strftime("%Y-%m-%d %H:%M")<cr>
 
 " markdown
 noremap <LEADER>cr i## C->R 0x
@@ -90,7 +91,7 @@ function AddTitle()
         call append(2,"'''\\")
         call append(3,"Filename: ".expand("%:t"))
         call append(4,"Description: <TODO>")
-        call append(5,"Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(5,"Last modified: humble ".strftime("%Y-%m-%d %H:%M"))
         call append(6,"Usage:")
         call append(7,"  python3 ".expand("%:t")." <TODO>")
         call append(8,"'''")
@@ -100,24 +101,24 @@ function AddTitle()
         call append(1,"# -*- coding: utf-8 -*-")
         call append(2,"#Filename: ".expand("%:t"))
         call append(3,"#Description: <TODO>")
-        call append(4,"#Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(4,"#Last modified: humble ".strftime("%Y-%m-%d %H:%M"))
         call append(5,"#Usage:")
         call append(6,"#  sh ".expand("%:t")." <TODO>")
         call append(7,"")
     elseif &filetype == 'cpp'
         call append(0,"/* Filename: ".expand("%:t"))
         call append(1," * Description: <TODO>")
-        call append(2," * Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(2," * Last modified: humble ".strftime("%Y-%m-%d %H:%M"))
         call append(3," */")
     elseif &filetype == 'c'
         call append(0,"/* Filename: ".expand("%:t"))
         call append(1," * Description: <TODO>")
-        call append(2," * Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(2," * Last modified: humble ".strftime("%Y-%m-%d %H:%M"))
         call append(3," */")
     elseif &filetype == 'h'
         call append(0,"/* Filename: ".expand("%:t"))
         call append(1," * Description: <TODO>")
-        call append(2," * Last modified: humble ".strftime("%Y%m%d %H:%M"))
+        call append(2," * Last modified: humble ".strftime("%Y-%m-%d %H:%M"))
         call append(3," */")
     elseif &filetype == 'md'
         echohl WarningMsg | echo "not .md file" | echohl None
@@ -130,7 +131,7 @@ endf
 
 function UpdateTitle()
     execute '/Filename/s@:.*$@\=": ".expand("%:t")@'
-    execute '/Last modified/s@:.*$@\=strftime(": humble %Y%m%d %H:%M")@'
+    execute '/Last modified/s@:.*$@\=strftime(": humble %Y-%m-%d %H:%M")@'
     if &filetype == 'python'
         execute '/  python3 /s@3 .*py@\="3 ".expand("%:t")@'
     elseif &filetype == 'sh'
