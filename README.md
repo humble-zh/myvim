@@ -7,6 +7,13 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 ```
 
+如果出现 ```Failed to connect to raw.githubusercontent.com port 443: Connection refused``` ,就在/etc/hosts文件追加
+
+```bash
+199.232.28.133 raw.githubusercontent.com
+```
+
+
 ## 安装ctags
 
 ### ubuntu
