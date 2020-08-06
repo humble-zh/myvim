@@ -33,7 +33,7 @@ sudo pacman -S ctags cmake
 ```bash
 cd $(当前目录)
 ln -s $(pwd)/.vimrc ~/.vimrc
-cp -r .vim/plugin ~/.vim/
+ln -s $(pwd)/.vim/plugin/ ~/.vim/
 ```
 
 ### 如果装了neovim
