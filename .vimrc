@@ -44,6 +44,10 @@ noremap # #zz
 noremap N Nzz
 noremap <LEADER><CR> :nohlsearch<CR>
 noremap <LEADER><TAB> /<TODO><CR>ca<
+
+" 使用系统剪切板取代无名寄存器
+set clipboard^=unnamed,unnamedplus
+
 noremap <LEADER>1 :1b<CR>
 noremap <LEADER>2 :2b<CR>
 noremap <LEADER>3 :3b<CR>
@@ -357,14 +361,10 @@ Plug 'airblade/vim-gitgutter' " 直接左边显示有改动的行
 " Plug 'junegunn/gv.vim' " git快捷命令(好像跟其他插件冲突了？)
 " Plug 'fholgado/minibufexpl.vim' " 这种安装方式似乎对config 'fholgado/minibufexpl.vim' 无效
 " Plug 'vim-scripts/a.vim' " 写代码时space+is就冲突了<LEADER>is，所以停用掉
-Plug 'vim-scripts/taglist.vim' " 文件预览，文件内跳转
 Plug 'vim-scripts/winmanager' " 窗口管理
-" Plug 'majutsushi/tagbar' " 文件预览，文件内跳转(与'vim-scripts/taglist.vim'重复)
-Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 Plug 'terryma/vim-multiple-cursors'
 Plug 'brooth/far.vim' " 在项目中替换多文件内容
 Plug 'easymotion/vim-easymotion' " 强化版检索式移动
-Plug 'ctrlpvim/ctrlp.vim' " 快速打开文件
 Plug 'itchyny/vim-cursorword'
 Plug 'lfv89/vim-interestingwords' " 同时高亮检索跳转 <leader>k
 Plug 'dense-analysis/ale' " 异步静态检测插件，减少代码缺陷，写出更规范和干净的代码
@@ -373,10 +373,18 @@ Plug 'farmergreg/vim-lastplace' " 记住上次编辑的位置，下次打开自�
 Plug 'xolox/vim-misc' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'xolox/vim-session' " 保存上次编辑文件及分屏状态，下次手动打开进行恢复
 Plug 'junegunn/vim-easy-align' " vipga= 或 gaip= 对齐
+Plug 'tpope/vim-surround' " 成对地修改单词或句子的引号或括符
 Plug 'tpope/vim-abolish' " snake_case(crs) MixedCase(crm) camelCase(crc) snake_case(crs) UPPER_CASE(cru) dash-case(cr-) dot.case(cr.) space case (cr<space>) Title Case (crt) are all just 3 keystrokes away.
 Plug 'vim-utils/vim-man' " 在vim内查看man
-Plug 'lilydjwg/fcitx.vim' " vim下中文输入法切换
 
+" Plug 'Yggdroot/LeaderF', { 'do': './install.sh' } "有了 'Yggdroot/LeaderF' 这些不需要 start
+Plug 'ctrlpvim/ctrlp.vim' " 快速打开文件
+Plug 'vim-scripts/taglist.vim' " 文件预览，文件内跳转
+" Plug 'majutsushi/tagbar' " 文件预览，文件内跳转(与'vim-scripts/taglist.vim'重复)
+Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
+"有了 'Yggdroot/LeaderF' 这些不需要 end
+
+" Plug 'lilydjwg/fcitx.vim' " vim下中文输入法切换
 
 " markdown
 Plug 'godlygeek/tabular'
@@ -401,16 +409,9 @@ let g:miniBufExplModSelTarget = 1
 " config 'airblade/vim-gitgutter'
 set updatetime=100
 
-" config 'vim-scripts/taglist.vim'
-let Tlist_Show_One_File=1
-let Tlist_Exit_OnlyWindow=1
-
 " config 'vim-scripts/winmanager'
 let g:winManagerWindowLayout='FileExplorer|TagList'
 nmap \w :WMToggle<cr>
-
-" config 'majutsushi/tagbar' " 文件预览，文件内跳转(与'vim-scripts/taglist.vim'重复)
-" nmap <F8> :TagbarToggle<CR>
 
 " config 'brooth/far.vim'
 set lazyredraw
@@ -434,10 +435,6 @@ map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
 map <Leader>h <Plug>(easymotion-linebackward)
 let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
-
-" config 'ctrlpvim/ctrlp.vim'
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
 
 " config 'lfv89/vim-interestingwords'
 nnoremap <silent> <leader>k :call InterestingWords('n')<cr>
@@ -468,27 +465,41 @@ nmap ga <Plug>(EasyAlign)
 "config 'vim-utils/vim-man' " 在vim内查看man
 map <leader>v :set splitright<CR><Plug>(Vman)
 
-" config 'lilydjwg/fcitx.vim' " vim下中文输入法切换
-let g:input_toggle = 1
-function! Fcitx2en()
-    let s:input_status = system("fcitx-remote")
-    if s:input_status == 2
-        let g:input_toggle = 1
-        let l:a = system("fcitx-remote -c")
-    endif
-endfunction
+" " config 'Yggdroot/LeaderF', { 'do': './install.sh' }
+" let g:Lf_ShowDevIcons = 0
 
-function! Fcitx2zh()
-    let s:input_status = system("fcitx-remote")
-    if s:input_status != 2 && g:input_toggle == 1
-        let l:a = system("fcitx-remote -o")
-        let g:input_toggle = 0
-    endif
-endfunction
+" config 'ctrlpvim/ctrlp.vim'
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
 
-" set timeoutlen=150
-autocmd InsertLeave * call Fcitx2en()
-" autocmd InsertEnter * call Fcitx2zh()
+" config 'vim-scripts/taglist.vim'
+let Tlist_Show_One_File=1
+let Tlist_Exit_OnlyWindow=1
+
+" config 'majutsushi/tagbar' " 文件预览，文件内跳转(与'vim-scripts/taglist.vim'重复)
+" nmap <F8> :TagbarToggle<CR>
+
+" " config 'lilydjwg/fcitx.vim' " vim下中文输入法切换
+" let g:input_toggle = 1
+" function! Fcitx2en()
+"     let s:input_status = system("fcitx-remote")
+"     if s:input_status == 2
+"         let g:input_toggle = 1
+"         let l:a = system("fcitx-remote -c")
+"     endif
+" endfunction
+"
+" function! Fcitx2zh()
+"     let s:input_status = system("fcitx-remote")
+"     if s:input_status != 2 && g:input_toggle == 1
+"         let l:a = system("fcitx-remote -o")
+"         let g:input_toggle = 0
+"     endif
+" endfunction
+"
+" " set timeoutlen=150
+" autocmd InsertLeave * call Fcitx2en()
+" " autocmd InsertEnter * call Fcitx2zh()
 
 " config markdown
 let g:vim_markdown_folding_disabled = 1
