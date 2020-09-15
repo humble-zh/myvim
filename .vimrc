@@ -70,8 +70,8 @@ noremap <LEADER>l3 :set splitright<CR>:vsplit<CR>:3b<CR>
 noremap <LEADER>l4 :set splitright<CR>:vsplit<CR>:4b<CR>
 nnoremap <leader>ev :vsp $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
-" iab xtime <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
-iab xtime <c-r>=strftime("%Y-%m-%d %H:%M")<cr>
+iab xtime <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
+" iab xtime <c-r>=strftime("%Y-%m-%d %H:%M")<cr>
 
 " markdown
 noremap <LEADER>cr i## C->R 0x
@@ -390,7 +390,7 @@ Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'kannokanno/previm'
-Plug 'tyru/open-browser.vim'
+Plug 'tyru/open-browser.vim' " :PrevimOpen
 
 " Plug 'ycm-core/YouCompleteMe' "sudo apt install build-essential cmake python3-dev;cd ~/.vim/plugged/YouCompleteMe/;./install.py --clang-completer
 " Initialize plugin system

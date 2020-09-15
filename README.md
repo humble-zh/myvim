@@ -59,6 +59,12 @@ vim
 :PlugInstall
 ```
 
+或
+
+```bash
+vim +PluginInstall +qall
+```
+
 ## 安装[coc.nvim](https://github.com/neoclide/coc.nvim)
 
 ---
