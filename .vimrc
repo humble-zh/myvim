@@ -52,10 +52,22 @@ noremap <LEADER>1 :1b<CR>
 noremap <LEADER>2 :2b<CR>
 noremap <LEADER>3 :3b<CR>
 noremap <LEADER>4 :4b<CR>
+noremap <LEADER>5 :5b<CR>
+noremap <LEADER>6 :6b<CR>
+noremap <LEADER>7 :7b<CR>
+noremap <LEADER>8 :8b<CR>
+noremap <LEADER>9 :9b<CR>
+noremap <LEADER>0 :10b<CR>
 noremap <LEADER>h1 :set nosplitright<CR>:vsplit<CR>:1b<CR>
 noremap <LEADER>h2 :set nosplitright<CR>:vsplit<CR>:2b<CR>
 noremap <LEADER>h3 :set nosplitright<CR>:vsplit<CR>:3b<CR>
 noremap <LEADER>h4 :set nosplitright<CR>:vsplit<CR>:4b<CR>
+noremap <LEADER>h5 :set nosplitright<CR>:vsplit<CR>:5b<CR>
+noremap <LEADER>h6 :set nosplitright<CR>:vsplit<CR>:6b<CR>
+noremap <LEADER>h7 :set nosplitright<CR>:vsplit<CR>:7b<CR>
+noremap <LEADER>h8 :set nosplitright<CR>:vsplit<CR>:8b<CR>
+noremap <LEADER>h9 :set nosplitright<CR>:vsplit<CR>:9b<CR>
+noremap <LEADER>h0 :set nosplitright<CR>:vsplit<CR>:10b<CR>
 " noremap <LEADER>j1 :set splitbelow<CR>:split<CR>:1b<CR>
 " noremap <LEADER>j2 :set splitbelow<CR>:split<CR>:2b<CR>
 " noremap <LEADER>j3 :set splitbelow<CR>:split<CR>:3b<CR>
@@ -68,6 +80,12 @@ noremap <LEADER>l1 :set splitright<CR>:vsplit<CR>:1b<CR>
 noremap <LEADER>l2 :set splitright<CR>:vsplit<CR>:2b<CR>
 noremap <LEADER>l3 :set splitright<CR>:vsplit<CR>:3b<CR>
 noremap <LEADER>l4 :set splitright<CR>:vsplit<CR>:4b<CR>
+noremap <LEADER>l5 :set splitright<CR>:vsplit<CR>:5b<CR>
+noremap <LEADER>l6 :set splitright<CR>:vsplit<CR>:6b<CR>
+noremap <LEADER>l7 :set splitright<CR>:vsplit<CR>:7b<CR>
+noremap <LEADER>l8 :set splitright<CR>:vsplit<CR>:8b<CR>
+noremap <LEADER>l9 :set splitright<CR>:vsplit<CR>:9b<CR>
+noremap <LEADER>l0 :set splitright<CR>:vsplit<CR>:10b<CR>
 nnoremap <leader>ev :vsp $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
 iab xtime <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
@@ -386,11 +404,14 @@ Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 
 " Plug 'lilydjwg/fcitx.vim' " vim下中文输入法切换
 
-" markdown
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
-Plug 'kannokanno/previm'
-Plug 'tyru/open-browser.vim' " :PrevimOpen
+" " markdown
+" Plug 'godlygeek/tabular'
+" Plug 'plasticboy/vim-markdown'
+" Plug 'kannokanno/previm'
+" Plug 'tyru/open-browser.vim' " :PrevimOpen
+
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 " Plug 'ycm-core/YouCompleteMe' "sudo apt install build-essential cmake python3-dev;cd ~/.vim/plugged/YouCompleteMe/;./install.py --clang-completer
 " Initialize plugin system
@@ -502,7 +523,18 @@ let Tlist_Exit_OnlyWindow=1
 " " autocmd InsertEnter * call Fcitx2zh()
 
 " config markdown
-let g:vim_markdown_folding_disabled = 1
+" let g:vim_markdown_folding_disabled = 1
+
+" Trigger configuration. You need to change this to something other than <tab>
+" if you use one of the following:
+" - https://github.com/Valloric/YouCompleteMe
+" - https://github.com/nvim-lua/completion-nvim
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
 " " YouCompleteMe
 " " Python Semantic Completion

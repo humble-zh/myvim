@@ -1,0 +1,173 @@
+
+snippet fun "function def" b
+${2:void} ${1:name}(${3:arg}){
+	${0:statement}
+}
+endsnippet
+
+
+snippet proginit "program init" b
+log_open(PROG);
+
+if (!uci_check_bool(PROG ".enable")) { l_d(PROG " has not enabled"); return 0; }
+
+if (daemon(0, 0) < 0) { l_e(PROG " daemon() failed"); exit(1); }
+
+if (daemon_check_running("/var/run/" PROG ".pid")) { l_e(PROG " was already run"); exit(1); }
+
+l_i(PROG " runing succeeds");
+
+signal(SIGTERM, sigterm_handler);
+
+if (OK != conf_init()) { exit(1); }
+
+${0}
+endsnippet
+
+
+snippet mosqfun "mosqfun" b
+static bool_t connected = true;
+static uint32_t pub_cnt = 0;
+
+static void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int result)
+{
+	l_d("MQTT connected");
+	connected = true;
+	//should we subscribe some topics??
+}
+
+static void mosq_cb_on_disconnect(struct mosquitto *mosq, void *obj, int rc)
+{
+	int rec_rc;
+	connected = false;
+
+	rec_rc = mosquitto_reconnect_async(mosq);
+	l_w("MQTT reconnecting in 10s");
+	sleep(10);
+	if (MOSQ_ERR_SUCCESS != rec_rc) {
+		l_d("MQTT reconnect error:%s", mosquitto_strerror(rec_rc));
+		connected = false;
+	}
+
+	//Should we stop reconnect_async() if the Broker close the MQTT link?
+	//mosquitto_loop_stop(mosq, false);
+	//mosquitto_destroy(mosq);
+	//mosquitto_lib_cleanup();
+}
+
+static void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos)
+{
+	l_d("topic connected");
+}
+
+static void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string) { l_d("%s", string); }
+
+static void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid)
+{
+	l_d("MQTT Message published. count:%d", ++pub_cnt);
+	usi_printf(PROG ".count", "%d", pub_cnt);
+}
+
+static int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen,
+		const char *payload, int qos)
+{
+	int32_t rc;
+	const char *error_string = NULL;
+
+	if (NULL == mosq || NULL == topic || NULL == payload || payloadlen <= 0) {
+		l_e("Param invalid");
+		return ERROR;
+	}
+
+	l_d("'%s' '%s'", topic, payload);
+	rc = mosquitto_publish(mosq, NULL, topic, payloadlen, payload, qos, true);
+	if (MOSQ_ERR_SUCCESS != rc) {
+		error_string = mosquitto_strerror(rc);
+		l_e("Pub failed:%s", error_string);
+		return ERROR;
+	}
+
+	return OK;
+}
+
+static void mosq_rcv(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
+{
+	char *recv_str = (char *)message->payload;
+	l_d("%s get %s %s", mosqclientid, (char *)message->topic, recv_str);
+	return ;
+}
+
+${0}
+endsnippet
+
+
+snippet mosqinit "mosqinit" b
+mosquitto_lib_init();
+struct mosquitto *${1:mosq} = mosquitto_new(${2:conf}.${3:serial_number}, ${4:true}, ${5:agr});
+if (NULL == $1) { l_e("mosquitto_new() failed"); mosquitto_lib_cleanup(); exit(1); }
+
+mosquitto_username_pw_set($1, $2.${6:usr}, $2.${7:pwd});
+mosquitto_connect_callback_set($1, mosq_cb_on_connect);
+mosquitto_disconnect_callback_set($1, mosq_cb_on_disconnect);
+mosquitto_subscribe_callback_set($1, mosq_cb_on_sub);
+mosquitto_publish_callback_set($1, mosq_cb_on_pub);
+mosquitto_log_callback_set($1, mosq_cb_on_log);
+mosquitto_message_callback_set($1, mosq_rcv);
+mosquitto_will_set($1, "Message/LastWill", strlen("hello"), "hello", 1, false);
+
+int rc = mosquitto_connect_async($1, $2.${8:addr}, $2.${9:port}, $2.${10:keepalive});
+if (MOSQ_ERR_SUCCESS != rc) { l_w("%s", mosquitto_strerror(rc)); }
+else { /* mqtt_publish($1, $2.topic, strlen($2.payload), $2.payload, 1); */ }
+
+l_d("start to loop");
+mosquitto_loop_start($1);
+
+${0}
+
+mosquitto_loop_stop(mosq, false);
+mosquitto_destroy(mosq);
+mosquitto_lib_cleanup();
+endsnippet
+
+
+snippet setitimer "setitimer()" b
+static volatile int loop = 0;
+
+signal(SIGALRM, alrm_handler);
+
+struct itimerval itv = {
+	.it_value = { .tv_sec = ${1:conf.interval}, .tv_usec = 0 },//firstly
+	.it_interval = { .tv_sec = ${2:conf.interval}, .tv_usec = 0 } //reset to
+};
+if (0 > setitimer(ITIMER_REAL, &itv, NULL)) { l_e("setitimer() failed"); exit(1); }
+
+while (1) {
+	while (0 == loop) { pause(); }
+	loop = 0;
+	if (connected) {
+		${0:do sth}
+	}
+}
+endsnippet
+
+
+snippet ugs "uci_get(string)" b
+conf.${1:element} = (char *)uci_get(PROG ".$1");
+if (NULL == conf.$1) { l_e("get " PROG ".$1 failed"); return ERROR; }
+l_d("get " PROG ".$1 \"%s\"", conf.$1);
+
+${0}
+endsnippet
+
+
+snippet ugi "uci_get(int)" b
+tmpptr = (char *)uci_get(PROG ".${1:element}");
+if (NULL == tmpptr) { l_e("get " PROG ".$1 failed"); return ERROR; }
+conf.$1 = atoi(tmpptr);
+l_d("get " PROG ".$1 %d", conf.$1);
+
+${0}
+endsnippet
+
+snippet set "set()" b
+endsnippet
