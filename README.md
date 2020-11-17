@@ -44,6 +44,7 @@ sudo pacman -S ctags cmake
 cd $(当前目录)
 ln -s $(pwd)/.vimrc ~/.vimrc
 ln -s $(pwd)/.vim/plugin/ ~/.vim/
+ln -s $(pwd)/.vim/UltiSnips/ ~/.vim/
 ```
 
 ### neovim
