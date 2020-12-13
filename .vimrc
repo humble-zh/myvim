@@ -403,10 +403,10 @@ Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 " Plug 'lilydjwg/fcitx.vim' " vim下中文输入法切换
 
 " " markdown
-" Plug 'godlygeek/tabular'
-" Plug 'plasticboy/vim-markdown'
-" Plug 'kannokanno/previm'
-" Plug 'tyru/open-browser.vim' " :PrevimOpen
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+Plug 'kannokanno/previm'
+Plug 'tyru/open-browser.vim' " :PrevimOpen
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -521,7 +521,7 @@ let Tlist_Exit_OnlyWindow=1
 " " autocmd InsertEnter * call Fcitx2zh()
 
 " " config markdown
-" let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_folding_disabled = 1
 
 
 " config 'SirVer/ultisnips' && config 'honza/vim-snippets'
