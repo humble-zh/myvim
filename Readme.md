@@ -38,19 +38,16 @@ sudo pacman -S ctags cmake
 
 ## 使用配置文件
 
-### vim
+### vim && neovim
 
 ```bash
 cd $(当前目录)
 ln -s $(pwd)/.vimrc ~/.vimrc
 ln -s $(pwd)/.vim/plugin/ ~/.vim/
 ln -s $(pwd)/.vim/UltiSnips/ ~/.vim/
-```
-
-### neovim
-```bash
-ln -s $(pwd)/.vim ~/.config/nvim
-ln -s $(pwd)/.vimrc ~/.config/nvim/init.vim
+mkdir -p ~/.config
+ln -s ~/.vim ~/.config/nvim
+ln -s ~/.vimrc ~/.config/nvim/init.vim
 ```
 
 ## 打开vim安装插件
