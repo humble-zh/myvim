@@ -1,4 +1,29 @@
 
+snippet hello "hello" b
+/* Filename: main.c
+ * Description: <TODO>
+ * Last modified: humble 2020-12-23 17:43
+ */
+#include <stdio.h>
+#include <stdlib.h>
+
+static void usage(void)
+{
+#define USAGE "Usage:\n\
+	Version %s\n"
+	printf(USAGE);
+}
+
+int main(int argc, char **argv)
+{
+	if(argc != 1){ fprintf(stderr, "argc !=1"); usage(); exit(1); }
+
+	printf("hello world\n");
+	usage();
+	return 0;
+}
+endsnippet
+
 snippet fun "function def" b
 ${2:void} ${1:name}(${3:arg}){
 	${0:statement}
