@@ -236,22 +236,18 @@ function Hello()
         call append(8,"")
         call append(9,"int main(int argc, char **argv)")
         call append(10,"{")
-        call append(11,"    if(argc != 1){")
-        call append(12,"        fprintf(stderr, \"argc !=1\");")
-        call append(13,"        usage();")
-        call append(14,"        exit(1);")
-        call append(15,"    }")
+        call append(11,"    if(argc != 1){ fprintf(stderr, \"argc !=1\"); usage(); exit(1); }")
+        call append(12,"")
+        call append(13,"    printf(\"hello world\\n\");")
+        call append(14,"    return 0;")
+        call append(15,"}")
         call append(16,"")
-        call append(17,"    <TODO>")
-        call append(18,"    return 0;")
-        call append(19,"}")
-        call append(20,"")
-        call append(21,"static void usage(void)")
-        call append(22,"{")
-        call append(23,"#define USAGE \"Usage:\\n\\")
-        call append(24,"  Helloworld\\n\"")
-        call append(25,"    printf(USAGE);")
-        call append(26,"}")
+        call append(17,"static void usage(void)")
+        call append(18,"{")
+        call append(19,"#define USAGE \"Usage:\\n\\")
+        call append(20,"  Helloworld\\n\"")
+        call append(21,"    printf(USAGE);")
+        call append(22,"}")
     elseif &filetype == 'h'
         echohl WarningMsg | echo "not .h file" | echohl None
     elseif &filetype == 'h'
@@ -370,7 +366,8 @@ call plug#begin('~/.vim/plugged')
 Plug 'mhinz/vim-startify' " vim启动显示母牛
 Plug 'vim-airline/vim-airline' " 状态栏
 Plug 'vim-airline/vim-airline-themes' " 状态栏主题
-Plug 'w0ng/vim-hybrid' " 主题
+" Plug 'w0ng/vim-hybrid' " 主题
+Plug 'sjl/badwolf'
 " Plug 'Yggdroot/indentLine'
 Plug 'airblade/vim-gitgutter' " 直接左边显示有改动的行
 " Plug 'tpope/vim-fugitive' " git快捷命令(好像跟其他插件冲突了？)
@@ -416,8 +413,8 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 " config 'w0ng/vim-hybrid'
-set background=dark
-colorscheme hybrid
+" set background=dark
+" colorscheme hybrid
 
 " config 'fholgado/minibufexpl.vim'
 let g:miniBufExplMapWindowNavVim = 1
@@ -704,3 +701,11 @@ nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+
+
+" config Plug 'sjl/badwolf'
+colorscheme badwolf
+" Make the gutters darker than the background.
+let g:badwolf_darkgutter = 1
+let g:badwolf_tabline = 3
+let g:badwolf_css_props_highlight = 3
