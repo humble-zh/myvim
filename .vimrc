@@ -17,6 +17,7 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 set softtabstop=4
+set fdm=syntax
 
 " 外观
 set number
@@ -399,22 +400,33 @@ Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 
 " Plug 'lilydjwg/fcitx.vim' " vim下中文输入法切换
 
+if has("gui_running")
 " " markdown
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'kannokanno/previm'
 Plug 'tyru/open-browser.vim' " :PrevimOpen
+endif
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
+if has('nvim')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif "has('nvim')
 
 call plug#end()
 
 " config 'w0ng/vim-hybrid'
 " set background=dark
 " colorscheme hybrid
+
+" config Plug 'sjl/badwolf'
+colorscheme badwolf
+" Make the gutters darker than the background.
+let g:badwolf_darkgutter = 1
+let g:badwolf_tabline = 3
+let g:badwolf_css_props_highlight = 3
 
 " config 'fholgado/minibufexpl.vim'
 let g:miniBufExplMapWindowNavVim = 1
@@ -517,8 +529,10 @@ let Tlist_Exit_OnlyWindow=1
 " autocmd InsertLeave * call Fcitx2en()
 " " autocmd InsertEnter * call Fcitx2zh()
 
+if has("gui_running")
 " " config markdown
 let g:vim_markdown_folding_disabled = 1
+endif
 
 
 " config 'SirVer/ultisnips' && config 'honza/vim-snippets'
@@ -535,7 +549,8 @@ let g:UltiSnipsEditSplit="vertical"
 
 
 
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" config 'neoclide/coc.nvim', {'branch': 'release'}
+if has('nvim')
 " TextEdit might fail if hidden is not set.
 set hidden
 
@@ -701,11 +716,4 @@ nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-
-
-" config Plug 'sjl/badwolf'
-colorscheme badwolf
-" Make the gutters darker than the background.
-let g:badwolf_darkgutter = 1
-let g:badwolf_tabline = 3
-let g:badwolf_css_props_highlight = 3
+endif "has('nvim')
