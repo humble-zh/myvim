@@ -33,17 +33,11 @@ endsnippet
 
 snippet proginit "program init" b
 log_open(PROG);
-
 if (!uci_check_bool(PROG ".enable")) { l_d(PROG " has not enabled"); return 0; }
-
 if (daemon(0, 0) < 0) { l_e(PROG " daemon() failed"); exit(1); }
-
 if (daemon_check_running("/var/run/" PROG ".pid")) { l_e(PROG " was already run"); exit(1); }
-
 l_i(PROG " runing succeeds");
-
 signal(SIGTERM, sigterm_handler);
-
 if (OK != conf_init()) { exit(1); }
 
 ${0}
