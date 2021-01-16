@@ -368,18 +368,18 @@ Plug 'mhinz/vim-startify' " vim启动显示母牛
 Plug 'vim-airline/vim-airline' " 状态栏
 Plug 'vim-airline/vim-airline-themes' " 状态栏主题
 " Plug 'w0ng/vim-hybrid' " 主题
-Plug 'sjl/badwolf'
-" Plug 'Yggdroot/indentLine'
+Plug 'sjl/badwolf' " 主题
+" Plug 'Yggdroot/indentLine' " 不想markdown自动收起超链接，故注释
 Plug 'airblade/vim-gitgutter' " 直接左边显示有改动的行
 " Plug 'tpope/vim-fugitive' " git快捷命令(好像跟其他插件冲突了？)
 " Plug 'junegunn/gv.vim' " git快捷命令(好像跟其他插件冲突了？)
 " Plug 'fholgado/minibufexpl.vim' " 这种安装方式似乎对config 'fholgado/minibufexpl.vim' 无效
 " Plug 'vim-scripts/a.vim' " 写代码时space+is就冲突了<LEADER>is，所以停用掉
 Plug 'vim-scripts/winmanager' " 窗口管理
-Plug 'terryma/vim-multiple-cursors'
+Plug 'terryma/vim-multiple-cursors' " <C-n> 选中多个相同单词一起修改
 Plug 'brooth/far.vim' " 在项目中替换多文件内容
 Plug 'easymotion/vim-easymotion' " 强化版检索式移动
-Plug 'itchyny/vim-cursorword'
+Plug 'itchyny/vim-cursorword' " 修改字符串的 引号对
 Plug 'lfv89/vim-interestingwords' " 同时高亮检索跳转 <leader>k
 Plug 'dense-analysis/ale' " 异步静态检测插件，减少代码缺陷，写出更规范和干净的代码
 " Plug 'vim-autoformat' " 代码格式化插件。规范代码格式，能用工具就用工具，把更多心思放在代码逻辑本身而不是调整格式上(同时避免了不同成员关于代码风格的争论)
@@ -400,13 +400,11 @@ Plug 'vim-scripts/ag.vim' " 使用 the_silver_searcher 在vim内快速搜索:Ag
 
 " Plug 'lilydjwg/fcitx.vim' " vim下中文输入法切换
 
-if has("gui_running")
 " " markdown
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'kannokanno/previm'
 Plug 'tyru/open-browser.vim' " :PrevimOpen
-endif
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -527,10 +525,8 @@ let Tlist_Exit_OnlyWindow=1
 " autocmd InsertLeave * call Fcitx2en()
 " " autocmd InsertEnter * call Fcitx2zh()
 
-if has("gui_running")
 " " config markdown
 let g:vim_markdown_folding_disabled = 1
-endif
 
 
 " config 'SirVer/ultisnips' && config 'honza/vim-snippets'

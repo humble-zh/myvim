@@ -66,8 +66,55 @@ vim +PluginInstall +qall
 ## 安装[coc.nvim](https://github.com/neoclide/coc.nvim)
 
 ```bash
-sudo pacman -S nodejs
+sudo pacman -S nodejs bear ccls
 ```
+
+`:CocInfo` 出现版本号表示安装成功
+
+`:CocConfig` 输入配置
+
+```json
+{
+    "languageserver": {
+        "ccls": {
+            "command": "ccls",
+            "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+            "rootPatterns": [".ccls", "compile_commands.json", ".git/", ".hg/"],
+            "initializationOptions": {
+                "cache": {
+                    "directory": "/tmp/ccls"
+                }
+            }
+        }
+    }
+}
+```
+
+`:CocInstall coc-json coc-ccls coc-snippets` 安装插件
+
+
+若报错如下，[解决方案](https://github.com/neoclide/coc.nvim/issues/2088#issuecomment-648801572)
+```
+[coc.nvim] Unable to load global extension at /home/xxx/.config/coc/extensions/node_modules/coc-ccls: main file ./lib/extension.js not found, you may need to build the project
+```
+
+```bash
+cd src/
+make clean
+bear -- make
+```
+
+安装命令`:CocInstall 插件名`
+
+移除命令`:CocUninstall 插件名`
+
+查看已安装`:CocList extensions`
+
+更新命令`:CocUpdate`
+
+
+
+
 ---
 
 ## (NO)安装[YouCompleteMe](https://github.com/ycm-core/YouCompleteMe)
