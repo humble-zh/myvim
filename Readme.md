@@ -65,6 +65,9 @@ vim +PluginInstall +qall
 
 ## 安装[coc.nvim](https://github.com/neoclide/coc.nvim)
 
+```bash
+sudo pacman -S nodejs
+```
 ---
 
 ## (NO)安装[YouCompleteMe](https://github.com/ycm-core/YouCompleteMe)

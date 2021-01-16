@@ -411,9 +411,7 @@ endif
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
-if has('nvim')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-endif "has('nvim')
 
 call plug#end()
 
@@ -550,7 +548,6 @@ let g:UltiSnipsEditSplit="vertical"
 
 
 " config 'neoclide/coc.nvim', {'branch': 'release'}
-if has('nvim')
 " TextEdit might fail if hidden is not set.
 set hidden
 
@@ -716,4 +713,3 @@ nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-endif "has('nvim')
