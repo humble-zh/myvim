@@ -66,7 +66,7 @@ vim +PluginInstall +qall
 ## 安装[coc.nvim](https://github.com/neoclide/coc.nvim)
 
 ```bash
-sudo pacman -S nodejs bear ccls
+sudo pacman -S bear ccls nodejs-lts-erbium
 cd $(当前目录)
 ln -s $(pwd)/coc-settings.json ~/.vim/
 ```
