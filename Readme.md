@@ -67,6 +67,8 @@ vim +PluginInstall +qall
 
 ```bash
 sudo pacman -S nodejs bear ccls
+cd $(当前目录)
+ln -s $(pwd)/coc-settings.json ~/.vim/
 ```
 
 `:CocInfo` 出现版本号表示安装成功
@@ -93,9 +95,17 @@ sudo pacman -S nodejs bear ccls
 `:CocInstall coc-json coc-ccls coc-snippets` 安装插件
 
 
-若报错如下，[解决方案](https://github.com/neoclide/coc.nvim/issues/2088#issuecomment-648801572)
+若报错如下，
+
 ```
 [coc.nvim] Unable to load global extension at /home/xxx/.config/coc/extensions/node_modules/coc-ccls: main file ./lib/extension.js not found, you may need to build the project
+```
+
+[解决方案](https://github.com/neoclide/coc.nvim/issues/2088#issuecomment-648801572)
+
+```bash
+cd ~/.config/coc/extensions/node_modules/coc-ccls
+ln -s node_modules/ws/lib lib
 ```
 
 ```bash

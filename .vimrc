@@ -6,7 +6,7 @@ syntax enable
 syntax on
 set showmode
 set showcmd
-" set mouse=a
+set mouse=a
 set encoding=utf-8
 set t_Co=256
 filetype indent on
@@ -376,10 +376,11 @@ Plug 'airblade/vim-gitgutter' " 直接左边显示有改动的行
 " Plug 'fholgado/minibufexpl.vim' " 这种安装方式似乎对config 'fholgado/minibufexpl.vim' 无效
 " Plug 'vim-scripts/a.vim' " 写代码时space+is就冲突了<LEADER>is，所以停用掉
 Plug 'vim-scripts/winmanager' " 窗口管理
+
 Plug 'terryma/vim-multiple-cursors' " <C-n> 选中多个相同单词一起修改
 Plug 'brooth/far.vim' " 在项目中替换多文件内容
-Plug 'easymotion/vim-easymotion' " 强化版检索式移动
-Plug 'itchyny/vim-cursorword' " 修改字符串的 引号对
+Plug 'easymotion/vim-easymotion' " 强化版检索式移动 <LEADER>w
+Plug 'itchyny/vim-cursorword' " 修改字符串的 引号对 cs'"
 Plug 'lfv89/vim-interestingwords' " 同时高亮检索跳转 <leader>k
 Plug 'dense-analysis/ale' " 异步静态检测插件，减少代码缺陷，写出更规范和干净的代码
 " Plug 'vim-autoformat' " 代码格式化插件。规范代码格式，能用工具就用工具，把更多心思放在代码逻辑本身而不是调整格式上(同时避免了不同成员关于代码风格的争论)
@@ -542,10 +543,12 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsEditSplit="vertical"
 
 
-
 " config 'neoclide/coc.nvim', {'branch': 'release'}
-" TextEdit might fail if hidden is not set.
-set hidden
+" 自动安装的coc插件
+let g:coc_global_extensions = ['coc-json', 'coc-vimlsp', 'coc-ccls', 'coc-snippets']
+
+" " TextEdit might fail if hidden is not set.
+" set hidden " 文件未保存也允许跳转到其他文件
 
 " Some servers have issues with backup files, see #649.
 set nobackup
@@ -556,23 +559,25 @@ set cmdheight=2
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
-set updatetime=300
+set updatetime=100
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
 
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-if has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
+" " Always show the signcolumn, otherwise it would shift the text each time
+" " diagnostics appear/become resolved.
+" " 把左边改动标致列和行号列合并为一列
+" if has("patch-8.1.1564")
+"   " Recently vim can merge signcolumn and number column into one
+"   set signcolumn=number
+" else
+"   set signcolumn=yes
+" endif
 
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
+" 输入字符弹出可补全列表后，按tab自动补全首个(为啥不行？)
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
@@ -585,6 +590,7 @@ function! s:check_back_space() abort
 endfunction
 
 " Use <c-space> to trigger completion.
+" 使用 组合键 调出可补全列表
 if has('nvim')
   inoremap <silent><expr> <c-space> coc#refresh()
 else
@@ -593,21 +599,24 @@ endif
 
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
+" 弹出可补全列表后，用回车选择首个
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+" 跳到上/下一个代码报错处
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
-" GoTo code navigation.
+" GoTo code navigation. 跳转到定义或引用处等等
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 " Use K to show documentation in preview window.
+" 查看说明文档
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
@@ -620,13 +629,15 @@ function! s:show_documentation()
   endif
 endfunction
 
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" " Highlight the symbol and its references when holding the cursor.
+" " 文件中全部与光标所在相同的单词显示下划线(暂时用其他插件实现)
+" autocmd CursorHold * silent call CocActionAsync('highlight')
 
-" Symbol renaming.
+" Symbol renaming. 修改局部/全局变量名 函数名
 nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
+" 对选中代码进行格式化(格式不是我想要的)
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
@@ -638,6 +649,7 @@ augroup mygroup
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
+" 暂时不明 始
 " Applying codeAction to the selected region.
 " Example: `<leader>aap` for current paragraph
 xmap <leader>a  <Plug>(coc-codeaction-selected)
@@ -709,3 +721,6 @@ nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+" 暂时不明 末
+
+let g:snips_author = 'Zh Li'
