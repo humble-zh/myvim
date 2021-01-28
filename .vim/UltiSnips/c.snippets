@@ -31,23 +31,28 @@ snippet l.h "l.h" b
 #include <syslog.h>
 
 #define l_e(fmt, arg...) do {\
-	syslog(LOG_ERR, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+	fprintf(stderr, "%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	syslog(LOG_ERR, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
 } while (0)
 
 #define l_w(fmt, arg...) do {\
-	syslog(LOG_WARNING, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	syslog(LOG_WARNING, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
 } while (0)
 
 #define l_n(fmt, arg...) do {\
-	syslog(LOG_NOTICE, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	syslog(LOG_NOTICE, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
 } while (0)
 
 #define l_i(fmt, arg...) do {\
-	syslog(LOG_INFO, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	syslog(LOG_INFO, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
 } while (0)
 
 #define l_d(fmt, arg...) do {\
-	syslog(LOG_DEBUG, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	syslog(LOG_DEBUG, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
 } while (0)
 
 #endif /* ifndef __L_H__ */
