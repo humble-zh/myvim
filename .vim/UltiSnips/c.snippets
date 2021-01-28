@@ -24,6 +24,18 @@ int main(int argc, char **argv)
 }
 endsnippet
 
+
+snippet malloc "malloc()" b
+${1:type_t} *${3:pointer} = malloc(${2:sizeof($1)});
+if($3 == NULL){  l_e("malloc() %s", strerror(errno)); ${4:return 0; }}
+memset($3, 0, $2);
+
+${0}
+
+if($3){ free($3); $3 = NULL; }
+endsnippet
+
+
 snippet l.h "l.h" b
 #ifndef __L_H__
 #define __L_H__
@@ -31,32 +43,33 @@ snippet l.h "l.h" b
 #include <syslog.h>
 
 #define l_e(fmt, arg...) do {\
-	fprintf(stderr, "%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
-	syslog(LOG_ERR, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	fprintf(stderr, "%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
+	syslog(LOG_ERR, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
 #define l_w(fmt, arg...) do {\
-	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
-	syslog(LOG_WARNING, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
+	syslog(LOG_WARNING, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
 #define l_n(fmt, arg...) do {\
-	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
-	syslog(LOG_NOTICE, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
+	syslog(LOG_NOTICE, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
 #define l_i(fmt, arg...) do {\
-	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
-	syslog(LOG_INFO, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
+	syslog(LOG_INFO, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
 #define l_d(fmt, arg...) do {\
-	printf("%s:%d:%s " fmt "\n", __FILE__, __LINE__, __FUNCTION__, ## arg);\
-	syslog(LOG_DEBUG, "%s:%d:%s " fmt, __FILE__, __LINE__, __FUNCTION__, ## arg);\
+	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
+	syslog(LOG_DEBUG, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
 #endif /* ifndef __L_H__ */
 endsnippet
+
 
 snippet sigterm_handler "sigterm_handler" b
 static void sigterm_handler(int signal) { l_i("stoping"); event_base_loopbreak(dev.base); }
@@ -77,6 +90,23 @@ if (0 >= ${1:conf_init}()) { exit(1); }
 ${0}
 endsnippet
 
+
+snippet evinit "event init" b
+${1:base} = event_base_new();
+if($1 == NULL) { l_e("event_base_new() failed"); ${2:return -1;} }
+${0}
+//move it
+event_base_dispatch($1); //loop
+//move it
+event_base_free($1);
+endsnippet
+
+snippet evtimer "eventtimer" b
+struct timeval tv = { .tv_sec = 1, .tv_usec = 0 };
+event_assign(&${1:event}, ${2:event_base}, -1, EV_TIMEOUT, ${3:CallbackFunc}, ${4:CallbackFuncArg});
+event_add(&$1, &${5:timeval});
+${0}
+endsnippet
 
 snippet mosqfun "mosqfun" b
 static bool_t connected = true;
@@ -160,53 +190,53 @@ snippet mqtt.h "mqtt.h" b
 #include <mosquitto.h>
 #include <event.h>
 #include <event2/util.h>
-#include <mosquitto.h>
 
 typedef enum {
-	MQTT_INIT = 0,
-	MQTT_CONNECTING,
-	MQTT_DISCONNECTED,
-	MQTT_RECONNECTING,
-	MQTT_RUNINGTASK,
-	MQTT_END
-} mqtt_state_t;
+	MQTT_STATE_INIT = 0,
+	MQTT_STATE_CONNECTING,
+	MQTT_STATE_DISCONNECTED,
+	MQTT_STATE_RECONNECTING,
+	MQTT_STATE_RUNING,
+	MQTT_STATE_END
+}mqtt_state_t;
+
+typedef int mqtt_task_cb(void *);
+
+#define MQTT_BASEATTRIBUTES \
+	char *addr;\
+int32_t port;\
+char *clientid;\
+bool clean_session;\
+char *usr;\
+char *pwd;\
+int32_t keepalive;\
+int8_t qos;\
+struct mosquitto *mosq;\
+mqtt_state_t state;\
+int8_t isconnected;\
+struct event fsmev;\
+struct timeval taskinterval;\
+mqtt_task_cb *taskcb;\
+void *taskarg;
+
 
 typedef struct {
-	const char *addr;
-	int32_t port;
-	const char *clientid;
-	const char *usr;
-	const char *pwd;
-	int keepalive;
-
-	/* status */
-	struct mosquitto *mosq;
-	mqtt_state_t state;
-	int8_t is_connected;
-	int32_t pub_cnt;
-
-	struct event fsmev;
-	struct timeval fsmevinterval;
-
-	//task list
-	//const char *subtopic;
+	MQTT_BASEATTRIBUTES
+		int32_t pub_cnt;
+	const char *subtopic;
 	const char *pubtopic;
-	int8_t msgqos;
-	const char *southsn;
-	const char *linkkey;
-	int32_t linktimeout;
-	int32_t lasttime;
-	//const char *payloadfmt;
 }mqtt_t;
 
-extern void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int result);
+//callback function
+extern void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int rc);
 extern void mosq_cb_on_disconnect(struct mosquitto *mosq, void *obj, int rc);
 extern void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos);
 extern void mosq_cb_on_unsub(struct mosquitto *mosq, void *obj, int mid);
-extern void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string);
+extern void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int level, const char *str);
 extern void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid);
-extern int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos);
 extern void mosq_rcv(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message);
+
+extern int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos);
 extern void mqtt_fsm_cb(evutil_socket_t fd, short event, void *user_data);
 
 #endif //__MQTT_H__
@@ -217,145 +247,102 @@ snippet mqtt.c "mqtt.c" b
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <unistd.h>
 #include <string.h>
 #include <mosquitto.h>
-#include <json.h>
-
-#include "librouter.h"
-#include "rlib_uci.h"
-#include "dev.h"
+//#include <json/json.h>
+#include "mqtt.h"
 #include "l.h"
 
 
-void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int result)
+void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int rc)
 {
-    rdev_t *devptr = (rdev_t *)obj;
-    devptr->mqtt.is_connected = 1;
-    devptr->mqtt.state = MQTT_RUNINGTASK;
-    l_d("MQTT connected");
-    usi_printf(PROG ".status", "%s connected", devptr->mqtt.addr);
-    //should we subscribe some topics??
+	mqtt_t *mqttptr = (mqtt_t *)obj;
+	mqttptr->isconnected = 1;
+	mqttptr->state = MQTT_STATE_RUNING;
+	l_d("%s MQTT connected", mqttptr->clientid);
+	//should we subscribe some topics??
 }
 
 void mosq_cb_on_disconnect(struct mosquitto *mosq, void *obj, int rc)
 {
-    rdev_t *devptr = (rdev_t *)obj;
-    devptr->mqtt.is_connected = 0;
-    devptr->mqtt.state = MQTT_RECONNECTING;
-    l_w("MQTT on_disconnect");
-    usi_printf(PROG ".status", "%s disconnected", devptr->mqtt.addr);
+	mqtt_t *mqttptr = (mqtt_t *)obj;
+	mqttptr->isconnected = 0;
+	mqttptr->state = MQTT_STATE_DISCONNECTED;
+	l_w("MQTT on_disconnect");
 }
 
-void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos)
-{
-    l_d("topic subed");
-    rdev_t *devptr = (rdev_t *)obj;
+void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos) { l_d("topic subed"); }
+
+void mosq_cb_on_unsub(struct mosquitto *mosq, void *obj, int mid) { l_d("topic unsubed"); }
+
+void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int level, const char *str) { /*l_d("%s", str);*/ }
+
+void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid) { l_d("msg pubed.mid:%d", mid); }
+
+void mosq_rcv(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message) { l_i("%s %s", (char *)message->topic, (char *)message->payload); }
+
+
 #if 0
-    if(devptr->mqtt.state == MQTT_SUB_TOPOGET){ devptr->mqtt.state = MQTT_PUB_TOPOGET; }
-    else if(devptr->mqtt.state == MQTT_SUB_SUBDEVICEBATCHLOGIN){
-        devptr->mqtt.state = MQTT_PUB_SUBDEVICEBATCHLOGIN; }
-#endif
-}
-
-void mosq_cb_on_unsub(struct mosquitto *mosq, void *obj, int mid)
-{
-    l_d("topic unsubed");
-    //rdev_t *devptr = (rdev_t *)obj;
-}
-
-void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string) { l_d("%s", string); }
-
-void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid)
-{
-    rdev_t *devptr = (rdev_t *)obj;
-    l_d("MQTT Message published. count:%d, mid:%d", devptr->mqtt.pub_cnt, mid);
-}
-
 int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos)
 {
-    int32_t rc;
-    const char *error_string = NULL;
+	int32_t rc;
+	const char *error_string = NULL;
 
-    if (NULL == mosq || NULL == topic || NULL == payload || payloadlen <= 0) {
-        l_e("Param invalid");
-        return -1;
-    }
+	if (NULL == mosq || NULL == topic || NULL == payload || payloadlen <= 0) {
+		l_e("Param invalid");
+		return -1;
+	}
 
-    l_i("%s %s %s qos%d", dev.mqtt.clientid, topic, payload, qos);
-    rc = mosquitto_publish(mosq, NULL, topic, payloadlen, payload, qos, true);
-    if (MOSQ_ERR_SUCCESS != rc) {
-        error_string = mosquitto_strerror(rc);
-        l_e("Pub failed:%s", error_string);
-        return -1;
-    }
+	l_i("%s %s qos%d", topic, payload, qos);
+	rc = mosquitto_publish(mosq, NULL, topic, payloadlen, payload, qos, true);
+	if (MOSQ_ERR_SUCCESS != rc) {
+		error_string = mosquitto_strerror(rc);
+		l_e("Pub failed:%s", error_string);
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
-
-void mosq_rcv(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
-{
-    char buf[4096] = {0};
-    rdev_t *devptr = (rdev_t *)obj;
-    l_i("%s %s %s", devptr->mqtt.clientid, (char *)message->topic, (char *)message->payload);
-    return ;
-}
+#endif
 
 
 void mqtt_fsm_cb(evutil_socket_t fd, short event, void *user_data)
 {
-    int rc;
-    int mid = 0;
-    char buf[4096] = {0};
-    int32_t now = 0;
-    //struct timeval tv;
-    rdev_t *devptr = (rdev_t *)user_data;
-    switch (devptr->mqtt.state) {
-        case MQTT_INIT:
-        case MQTT_CONNECTING:
-            rc = mosquitto_connect_async(devptr->mqtt.mosq, devptr->mqtt.addr, devptr->mqtt.port, devptr->mqtt.keepalive);
-            if (MOSQ_ERR_SUCCESS == rc) {  l_d("mosquitto_connect_async() rc %d", rc); }
-            else { l_w("mosquitto_connect_async() failed:rc %d, %s, reconnect after 10s", rc, mosquitto_strerror(rc)); }
-            devptr->mqtt.state = MQTT_RECONNECTING; //connect once,then reconnect always if needed
-            devptr->mqtt.fsmevinterval.tv_sec = 8;
-            devptr->mqtt.fsmevinterval.tv_usec = 0;
-            break;
+	int rc;
+	struct timeval tv;
+	mqtt_t *mqttptr = (mqtt_t *)user_data;
 
-        case MQTT_DISCONNECTED:
-        case MQTT_RECONNECTING:
-            rc = mosquitto_reconnect_async(devptr->mqtt.mosq);
-            if (MOSQ_ERR_SUCCESS == rc) { l_d("mosquitto_reconnect_async() rc %d", rc); }
-            else { l_w("mosquitto_reconnect_async() failed:rc %d, %s, reconnect after 10s", rc, mosquitto_strerror(rc)); }
-            devptr->mqtt.fsmevinterval.tv_sec = 3;
-            devptr->mqtt.fsmevinterval.tv_usec = 0;
-            break;
+	switch (mqttptr->state) {
+		case MQTT_STATE_INIT:
+		case MQTT_STATE_CONNECTING:
+			rc = mosquitto_connect_async(mqttptr->mosq, mqttptr->addr, mqttptr->port, mqttptr->keepalive);
+			if (MOSQ_ERR_SUCCESS == rc) {  l_d("mosquitto_connect_async() rc %d", rc); }
+			else { l_w("mosquitto_connect_async() failed:rc %d, %s, reconnecting", rc, mosquitto_strerror(rc)); }
+			mqttptr->state = MQTT_STATE_RECONNECTING; //connect once,then reconnect always if needed
+			tv.tv_sec = 5; tv.tv_usec = 0;
+			break;
 
-        case MQTT_RUNINGTASK:
-            //foreach the tasklist:pub data to broker
-            /*
-            gettimeofday(&tv,NULL);
-            sprintf(buf, devptr->mqtt.payloadfmt, devptr->mqtt.pub_cnt, devptr->mqtt.pub_cnt % 2, ((int64_t)tv.tv_sec - 10)*1000UL + tv.tv_usec / 1000);
-            devptr->mqtt.pub_cnt++;
-            mosq_pub(devptr->mqtt.mosq, devptr->mqtt.pubtopic, strlen(buf), buf, 2);
-            devptr->mqtt.fsmevinterval.tv_sec = 60;
-            devptr->mqtt.fsmevinterval.tv_usec = 0;
-            */
-            now = time(NULL);
-            if(now - devptr->mqtt.lasttime > devptr->mqtt.linktimeout){
-                sprintf(buf,"{\"SN\":\"%s\",\"DT\":%d,\"MG\":[[\"%s\",\"0\"]]}",
-                        devptr->mqtt.southsn, now, devptr->mqtt.linkkey); ;
-                mosq_pub(devptr->mqtt.mosq, devptr->mqtt.pubtopic, strlen(buf), buf, devptr->mqtt.msgqos);
-                devptr->mqtt.lasttime = now;
-            }
-            l_d("MQTT runing");
-            break;
+		case MQTT_STATE_DISCONNECTED:
+		case MQTT_STATE_RECONNECTING:
+			rc = mosquitto_reconnect_async(mqttptr->mosq);
+			if (MOSQ_ERR_SUCCESS == rc) { l_d("mosquitto_reconnect_async() rc %d", rc); }
+			else { l_w("mosquitto_reconnect_async() failed:rc %d, %s, reconnecting", rc, mosquitto_strerror(rc)); }
+			tv.tv_sec = 5; tv.tv_usec = 0;
+			break;
 
-        default:
-            l_w("Unkown MQTT_STATE:%d", devptr->mqtt.state);
-            break;
-    }
+		case MQTT_STATE_RUNING:
+			if(mqttptr->taskcb){ mqttptr->taskcb(mqttptr->taskarg); }
+			else{ l_d("MQTT runing, do nothing"); }
+			tv.tv_sec = mqttptr->taskinterval.tv_sec;
+			tv.tv_usec = mqttptr->taskinterval.tv_usec;
+			break;
 
-    event_add(&dev.mqtt.fsmev, &dev.mqtt.fsmevinterval); //redo
+		default:
+			l_w("Unkown MQTT_STATE_STATE:%d", mqttptr->state);
+			break;
+	}
+
+	event_add(&mqttptr->fsmev, &tv); //redo
 }
 endsnippet
 
@@ -383,8 +370,8 @@ mosquitto_loop_start($1);
 
 ${0}
 
-mosquitto_loop_stop(mosq, false);
-mosquitto_destroy(mosq);
+mosquitto_loop_stop($1, false);
+mosquitto_destroy($1);
 mosquitto_lib_cleanup();
 endsnippet
 
