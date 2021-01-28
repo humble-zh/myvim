@@ -2,7 +2,7 @@
 snippet hello "hello" b
 /* Filename: main.c
  * Description: <TODO>
- * Last modified: humble 2020-12-23 17:43
+ * Last modified: humble 2021-01-28 09:22:42
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +10,7 @@ snippet hello "hello" b
 static void usage(void)
 {
 #define USAGE "Usage:\n\
-	Version %s\n"
+	Version 1.0.0\n"
 	printf(USAGE);
 }
 
@@ -24,10 +24,39 @@ int main(int argc, char **argv)
 }
 endsnippet
 
-snippet fun "function def" b
-${2:void} ${1:name}(${3:arg}){
-	${0:statement}
-}
+snippet l.h "l.h" b
+#ifndef __L_H__
+#define __L_H__
+#include <stdio.h>
+#include <syslog.h>
+
+#define l_e(fmt, arg...) do {\
+	syslog(LOG_ERR, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+} while (0)
+
+#define l_w(fmt, arg...) do {\
+	syslog(LOG_WARNING, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+} while (0)
+
+#define l_n(fmt, arg...) do {\
+	syslog(LOG_NOTICE, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+} while (0)
+
+#define l_i(fmt, arg...) do {\
+	syslog(LOG_INFO, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+} while (0)
+
+#define l_d(fmt, arg...) do {\
+	syslog(LOG_DEBUG, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+} while (0)
+
+#endif /* ifndef __L_H__ */
+endsnippet
+
+snippet sigterm_handler "sigterm_handler" b
+static void sigterm_handler(int signal) { l_i("stoping"); event_base_loopbreak(dev.base); }
+
+${0}
 endsnippet
 
 
@@ -38,7 +67,7 @@ if (daemon(0, 0) < 0) { l_e(PROG " daemon() failed"); exit(1); }
 if (daemon_check_running("/var/run/" PROG ".pid")) { l_e(PROG " was already run"); exit(1); }
 l_i(PROG " runing succeeds");
 signal(SIGTERM, sigterm_handler);
-if (OK != conf_init()) { exit(1); }
+if (0 >= ${1:conf_init}()) { exit(1); }
 
 ${0}
 endsnippet
