@@ -27,7 +27,7 @@ endsnippet
 
 snippet malloc "malloc()" b
 ${1:type_t} *${3:pointer} = malloc(${2:sizeof($1)});
-if($3 == NULL){  l_e("malloc() %s", strerror(errno)); ${4:return 0; }}
+if($3 == NULL){ l_e("malloc() %s", strerror(errno)); ${4:return -1; }}
 memset($3, 0, $2);
 
 ${0}
@@ -109,27 +109,27 @@ ${0}
 endsnippet
 
 snippet mosqfun "mosqfun" b
-static bool_t connected = true;
+static int32_t connected = 0;
 static uint32_t pub_cnt = 0;
 
-static void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int result)
+static void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int rc)
 {
 	l_d("MQTT connected");
-	connected = true;
+	connected = 1;
 	//should we subscribe some topics??
 }
 
 static void mosq_cb_on_disconnect(struct mosquitto *mosq, void *obj, int rc)
 {
 	int rec_rc;
-	connected = false;
+	connected = 0;
 
 	rec_rc = mosquitto_reconnect_async(mosq);
 	l_w("MQTT reconnecting in 10s");
 	sleep(10);
 	if (MOSQ_ERR_SUCCESS != rec_rc) {
 		l_d("MQTT reconnect error:%s", mosquitto_strerror(rec_rc));
-		connected = false;
+		connected = 0;
 	}
 
 	//Should we stop reconnect_async() if the Broker close the MQTT link?
@@ -138,17 +138,13 @@ static void mosq_cb_on_disconnect(struct mosquitto *mosq, void *obj, int rc)
 	//mosquitto_lib_cleanup();
 }
 
-static void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos)
-{
-	l_d("topic connected");
-}
+static void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos) { l_d("topic subed"); }
 
-static void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string) { l_d("%s", string); }
+static void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string) { /*l_d("%s", string);*/ }
 
 static void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid)
 {
 	l_d("MQTT Message published. count:%d", ++pub_cnt);
-	usi_printf(PROG ".count", "%d", pub_cnt);
 }
 
 static int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen,
@@ -159,7 +155,7 @@ static int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadle
 
 	if (NULL == mosq || NULL == topic || NULL == payload || payloadlen <= 0) {
 		l_e("Param invalid");
-		return ERROR;
+		return -1;
 	}
 
 	l_d("'%s' '%s'", topic, payload);
@@ -167,10 +163,10 @@ static int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadle
 	if (MOSQ_ERR_SUCCESS != rc) {
 		error_string = mosquitto_strerror(rc);
 		l_e("Pub failed:%s", error_string);
-		return ERROR;
+		return -1;
 	}
 
-	return OK;
+	return 0;
 }
 
 static void mosq_rcv(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
