@@ -22,7 +22,15 @@ set fdm=syntax
 " 外观
 set number
 set relativenumber
-set cursorline
+"CursorLine 和 CursorColumn 分别表示当前所在的行列
+"cterm 表示为原生vim设置样式，设置为NONE表示可以自定义设置。
+"ctermbg 设置终端vim的背景色
+"ctermfg 设置终端vim的前景色
+"guibg 和 guifg 分别是设置gvim的背景色和前景色
+set cursorline "高亮光标所在行
+highlight CursorLine   cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE
+set cursorcolumn "高亮光标所在列
+highlight CursorColumn cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE
 set textwidth=80
 set wrap
 " set nowrap
