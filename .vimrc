@@ -6,7 +6,7 @@ syntax enable
 syntax on
 set showmode
 set showcmd
-set mouse=a
+" set mouse=a
 set encoding=utf-8
 set t_Co=256
 filetype indent on
@@ -77,10 +77,16 @@ noremap <LEADER>h7 :set nosplitright<CR>:vsplit<CR>:7b<CR>
 noremap <LEADER>h8 :set nosplitright<CR>:vsplit<CR>:8b<CR>
 noremap <LEADER>h9 :set nosplitright<CR>:vsplit<CR>:9b<CR>
 noremap <LEADER>h0 :set nosplitright<CR>:vsplit<CR>:10b<CR>
-" noremap <LEADER>j1 :set splitbelow<CR>:split<CR>:1b<CR>
-" noremap <LEADER>j2 :set splitbelow<CR>:split<CR>:2b<CR>
-" noremap <LEADER>j3 :set splitbelow<CR>:split<CR>:3b<CR>
-" noremap <LEADER>j4 :set splitbelow<CR>:split<CR>:4b<CR>
+noremap <LEADER>j1 :set splitbelow<CR>:split<CR>:1b<CR>
+noremap <LEADER>j2 :set splitbelow<CR>:split<CR>:2b<CR>
+noremap <LEADER>j3 :set splitbelow<CR>:split<CR>:3b<CR>
+noremap <LEADER>j4 :set splitbelow<CR>:split<CR>:4b<CR>
+noremap <LEADER>j5 :set splitbelow<CR>:split<CR>:5b<CR>
+noremap <LEADER>j6 :set splitbelow<CR>:split<CR>:6b<CR>
+noremap <LEADER>j7 :set splitbelow<CR>:split<CR>:7b<CR>
+noremap <LEADER>j8 :set splitbelow<CR>:split<CR>:8b<CR>
+noremap <LEADER>j9 :set splitbelow<CR>:split<CR>:9b<CR>
+noremap <LEADER>j0 :set splitbelow<CR>:split<CR>:10b<CR>
 " noremap <LEADER>k1 :set nosplitbelow<CR>:split<CR>:1b<CR>
 " noremap <LEADER>k2 :set nosplitbelow<CR>:split<CR>:2b<CR>
 " noremap <LEADER>k3 :set nosplitbelow<CR>:split<CR>:3b<CR>
