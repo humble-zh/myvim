@@ -16,7 +16,7 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 ```
 
-如果出现 ```Failed to connect to raw.githubusercontent.com port 443: Connection refused``` ,就在/etc/hosts文件追加
+如果出现 `Failed to connect to raw.githubusercontent.com port 443: Connection refused` ,就在/etc/hosts文件追加
 
 ```bash
 199.232.28.133 raw.githubusercontent.com
@@ -66,7 +66,8 @@ vim +PluginInstall +qall
 ## 安装[coc.nvim](https://github.com/neoclide/coc.nvim)
 
 ```bash
-sudo pacman -S bear ccls nodejs-lts-erbium
+sudo pacman -S bear ccls npm
+#nodejs-lts-erbium
 cd $(当前目录)
 ln -s $(pwd)/coc-settings.json ~/.vim/
 ```
