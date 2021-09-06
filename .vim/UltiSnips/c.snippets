@@ -36,6 +36,16 @@ if($3){ free($3); $3 = NULL; }
 endsnippet
 
 
+snippet open "open()" b
+${1:type_t} *${4:filedescriptor} = open(${2:pathname}, ${3:O_RDWR});
+if($4 < 0){ l_e("open() %s", strerror(errno)); ${5:return -1; }}
+
+${0}
+
+if($4){ close($4); $4 = -1; }
+endsnippet
+
+
 snippet l.h "l.h" b
 #ifndef __L_H__
 #define __L_H__

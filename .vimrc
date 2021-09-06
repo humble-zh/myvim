@@ -28,9 +28,9 @@ set relativenumber
 "ctermfg 设置终端vim的前景色
 "guibg 和 guifg 分别是设置gvim的背景色和前景色
 set cursorline "高亮光标所在行
-highlight CursorLine   cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE
+highlight CursorLine   cterm=NONE ctermbg=black ctermfg=yellow guibg=NONE guifg=NONE
 set cursorcolumn "高亮光标所在列
-highlight CursorColumn cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE
+highlight CursorColumn cterm=NONE ctermbg=black ctermfg=yellow guibg=NONE guifg=NONE
 set textwidth=80
 set wrap
 " set nowrap
