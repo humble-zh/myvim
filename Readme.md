@@ -192,9 +192,18 @@ vim +PluginInstall +qall
 
 ## 安装[coc.nvim](https://github.com/neoclide/coc.nvim)
 
+### 安装nodejs
+
+[如何在 Ubuntu 20.04 上安装 Node.js 和 npm](https://zhuanlan.zhihu.com/p/140961618)
+
 ```bash
+#manjaro
 sudo pacman -S bear ccls npm
 #nodejs-lts-erbium
+#ubuntu
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo apt install nodejs
+
 cd $(当前目录)
 ln -s $(pwd)/coc-settings.json ~/.vim/
 ```
