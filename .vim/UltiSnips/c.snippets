@@ -26,7 +26,7 @@ endsnippet
 
 snippet malloc "malloc()" b
 ${1:type_t} *${3:pointer} = malloc(${2:sizeof($1)});
-if($3 == NULL){ l_e("malloc(),%s", strerror(errno)); ${4:return -1; }}
+if($3 == NULL){ l_e("malloc($3),%s", strerror(errno)); ${4:return -1; }}
 memset($3, 0, $2);
 
 ${0}
@@ -255,10 +255,13 @@ snippet maindaemon "main daemon" b
 #include 'l.h"
 
 #define PID_FILE    "/var/run/%s.pid"
-#define OUT_FILE    "/tmp/%s.log"
+#define OUT_FILE    "/tmp/%s_%d%d%d_%d%d%d.log"
+//#define mainl_d(fmt, ...) l_d("[main] " fmt , ##__VA_ARGS__);
 
 static int need_start = 0, need_stop = 0, need_daemon = 1, need_termination = 0;
 static char pid_file[PATH_MAX];
+int pid = -1;
+int loglevel = 6;
 
 static int get_opt(int argc, char **argv);
 static void termination(int sig);
@@ -292,7 +295,9 @@ int main(int argc, char **argv)
 	if(0 == write_pid(pid_file)){ return (-1); }
 	signal(SIGTERM, termination);
 
+	pid = getpid();
 	openlog(PROG, LOG_PID, LOG_DAEMON);
+	setlogmask(LOG_UPTO(loglevel));
 
 	${0}
 
@@ -308,15 +313,17 @@ static int get_opt(int argc, char **argv)
 		{"stop",       0,  NULL,  'S'},
 		{"start",      0,  NULL,  's'},
 		{"foreground", 0,  NULL,  'f'},
+		{"logLevel",   1,  NULL,  'L'},
 		{"Version",    0,  NULL,  'V'},
 		{0,            0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "hSsfV", long_opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "hSsfL:V", long_opts, NULL)) != -1) {
 		switch (opt) {
 			case 'S': need_stop = 1; break;
 			case 's': need_start = 1; break;
 			case 'f': need_daemon = 0; break;
+			case 'L': loglevel = atoi(optarg); break;
 			case 'V': printf(PROG " - " VER "\n"); return -1;
 			case '?':
 			case 'h':
@@ -355,7 +362,10 @@ static int daemonize(void)
 	close(2);
 
 	open("/dev/null", O_RDWR);
-	sprintf(out_file, OUT_FILE, PROG);
+	time_t now = time(NULL);
+	struct tm t;
+	localtime_r(&now, &t);
+	sprintf(out_file, OUT_FILE, PROG, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 	open(out_file, O_WRONLY|O_CREAT|O_TRUNC, 0600);
 	open(out_file, O_WRONLY|O_CREAT|O_TRUNC, 0600);
 	chdir("/");
@@ -367,11 +377,12 @@ static void usage(void)
 {
 #define USAGE \
 PROG" -<hsSc:> -[f]\n\
-  -h, --help,        print this manual\n\
-  -s, --start,       start the process\n\
-  -S, --stop,        stop the process\n\
-  -f, --foreground,  start without daemonized\n\
-  -V, --Version,     show the version\n\
+  -h, --help,            print this manual\n\
+  -s, --start,           start the process\n\
+  -S, --stop,            stop the process\n\
+  -f, --foreground,      start without daemonized\n\
+  -L, --logLevel <0-7>,  0-Emergency...6-Informational,7-Debug\n\
+  -V, --Version,         show the version\n\
 e.g.\n\
   # start the process without daemonized\n\
     "PROG" -sf\n\
@@ -383,34 +394,81 @@ Version:"VER"\n"
 endsnippet
 
 snippet l.h "l.h" b
+/*******************************************************************************
+MIT License
+
+Copyright (c) 2021 Zhihong Li <humble_zh@163.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*******************************************************************************/
 #ifndef __L_H__
 #define __L_H__
 #include <stdio.h>
 #include <syslog.h>
+#include <time.h>
 
-#define l_e(fmt, arg...) do {\
-	fprintf(stderr, "%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
-	syslog(LOG_ERR, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+extern int pid;
+extern int loglevel; //0 Emergency,1 Alert,2 Critical,3 Error,4 Warning,5 Notice,6 Informational,7 Debug
+
+#define l_e(fmt, arg...) do\
+{\
+	time_t _now = time(NULL);\
+	struct tm _t;\
+	localtime_r(&_now, &_t);\
+	if(loglevel >= 3){ fprintf(stderr, "%d-%d-%d %d:%d:%02d [%d] ERROR %s:%d " fmt "\n", _t.tm_year+1900, _t.tm_mon+1, _t.tm_mday, _t.tm_hour, _t.tm_min, _t.tm_sec, pid, __FUNCTION__, __LINE__, ## arg); }\
+	syslog(LOG_ERR, "ERROR %s:%d " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
-#define l_w(fmt, arg...) do {\
-	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
-	syslog(LOG_WARNING, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+#define l_w(fmt, arg...) do\
+{\
+	time_t _now = time(NULL);\
+	struct tm _t;\
+	localtime_r(&_now, &_t);\
+	if(loglevel >= 4){ printf("%d-%d-%d %d:%d:%02d [%d] WARNING %s:%d " fmt "\n", _t.tm_year+1900, _t.tm_mon+1, _t.tm_mday, _t.tm_hour, _t.tm_min, _t.tm_sec, pid, __FUNCTION__, __LINE__, ## arg); }\
+	syslog(LOG_WARNING, "WARNING %s:%d " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
-#define l_n(fmt, arg...) do {\
-	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
-	syslog(LOG_NOTICE, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+#define l_n(fmt, arg...) do\
+{\
+	time_t _now = time(NULL);\
+	struct tm _t;\
+	localtime_r(&_now, &_t);\
+	if(loglevel >= 5){ printf("%d-%d-%d %d:%d:%02d [%d] NOTICE %s:%d " fmt "\n", _t.tm_year+1900, _t.tm_mon+1, _t.tm_mday, _t.tm_hour, _t.tm_min, _t.tm_sec, pid, __FUNCTION__, __LINE__, ## arg); }\
+	syslog(LOG_NOTICE, "NOTICE %s:%d " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
-#define l_i(fmt, arg...) do {\
-	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
-	syslog(LOG_INFO, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+#define l_i(fmt, arg...) do\
+{\
+	time_t _now = time(NULL);\
+	struct tm _t;\
+	localtime_r(&_now, &_t);\
+	if(loglevel >= 6){ printf("%d-%d-%d %d:%d:%02d [%d] INFO %s:%d " fmt "\n", _t.tm_year+1900, _t.tm_mon+1, _t.tm_mday, _t.tm_hour, _t.tm_min, _t.tm_sec, pid, __FUNCTION__, __LINE__, ## arg); }\
+	syslog(LOG_INFO, "INFO %s:%d " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
-#define l_d(fmt, arg...) do {\
-	printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## arg);\
-	syslog(LOG_DEBUG, "%s:%d: " fmt, __FUNCTION__, __LINE__, ## arg);\
+#define l_d(fmt, arg...) do\
+{\
+	time_t _now = time(NULL);\
+	struct tm _t;\
+	localtime_r(&_now, &_t);\
+	if(loglevel >= 7){ printf("%d-%d-%d %d:%d:%02d [%d] DEBUG %s:%d " fmt "\n", _t.tm_year+1900, _t.tm_mon+1, _t.tm_mday, _t.tm_hour, _t.tm_min, _t.tm_sec, pid, __FUNCTION__, __LINE__, ## arg); }\
+	syslog(LOG_DEBUG, "DEBUG %s:%d " fmt, __FUNCTION__, __LINE__, ## arg);\
 } while (0)
 
 #endif /* ifndef __L_H__ */
