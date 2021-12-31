@@ -26,7 +26,7 @@ endsnippet
 
 snippet malloc "malloc()" b
 ${1:type_t} *${3:pointer} = malloc(${2:sizeof($1)});
-if($3 == NULL){ l_e("malloc($3),%s", strerror(errno)); ${4:return -1; }}
+if($3 == NULL){ l_e("malloc($3),%s", strerror(errno));${4: return -1;} }
 memset($3, 0, $2);
 
 ${0}
@@ -37,11 +37,35 @@ endsnippet
 
 snippet open "open()" b
 int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDWR});
-if($3 < 0){ l_e("open(),%s", strerror(errno)); ${4:return -1; }}
+if($3 < 0){ l_e("open(),%s", strerror(errno));${4: return -1;} }
 
 ${0}
 
 if($3 >= 0){ close($3); $3 = -1; }
+endsnippet
+
+
+snippet lseek "lseek()" b
+if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(),%s", strerror(errno));${4: goto lseekerr;} }
+${0}
+$4
+endsnippet
+
+
+snippet write "write()" b
+if(write(${1:fd}, ${2:buff}, ${3:strlen(buff)}) < 0){ l_e("write($2),%s", strerror(errno)); ${4: goto writeerr;} }
+l_d("write(%s)", $2);
+${0}
+$4
+endsnippet
+
+
+snippet read "read()" b
+int ${4:len} = read(${1:fd}, ${2:buff}, ${3:sizeof($2)});
+if($4 <= 0){ l_e("read()->%d,%s", $4, strerror(errno));${5: goto readerr;} }
+l_d("read()->%s", $2);
+${0}
+$5
 endsnippet
 
 
