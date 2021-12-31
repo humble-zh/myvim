@@ -79,9 +79,9 @@ snippet popen "popen()" b
 FILE *p = popen("${1:ifconfig eth0.1|grep 'HWaddr'|awk '{print $5}'|tr -d ':'}", "r");
 if(!p){ l_e("popen(),'%s'", strerror(errno)); goto popenerr; }
 int len = fread(${2:prbuff}, 1, ${3:sizeof($2)}, p);
-if(len <= 0){ l_e("fread(%s)->%d,failed", prbuff, len); }
-else{ prbuff[--len] = 0; }
 if(p){ pclose(p); p = NULL; }
+if(len <= 0){ l_e("fread(%s)->%d,failed", $2, len); }
+else{ $2[--len] = 0; }
 ${0}
 popenerr:
 endsnippet
