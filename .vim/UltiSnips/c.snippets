@@ -37,13 +37,33 @@ endsnippet
 
 snippet open "open()" b
 int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDWR});
-if($3 < 0){ l_e("open(),%s", strerror(errno));${4: return -1;} }
+if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
 ${0}
 
 if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
+snippet openrw "openreadwrite()" b
+int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDWR});
+if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
+
+if(write($3, ${5:buff}, ${6:strlen($5)}) < 0){ l_e("write(%s,%s),%s", $1, $5, strerror(errno)); ${7: goto writeerr;} }
+l_d("write(%s,%s)", $1, $5);
+
+if(lseek($3, 0, SEEK_SET) < 0){ l_e("lseek(%s),%s", $1, strerror(errno));${8: goto lseekerr;} }
+
+char ${9:buff}[1024] = {0};
+int ${11:len} = read($3, $9, ${10:sizeof($9)});
+if($11 <= 0){ l_e("read(%s)->%d,%s", $1, $11, strerror(errno));${12: goto readerr;} }
+l_d("read(%s,%s)->%d", $1, $9, $11);
+${0}
+
+readerr:
+lseekerr:
+writeerr:
+if($3 >= 0){ close($3); $3 = -1; }
+endsnippet
 
 snippet lseek "lseek()" b
 if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(),%s", strerror(errno));${4: goto lseekerr;} }
