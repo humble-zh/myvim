@@ -24,9 +24,19 @@ int main(int argc, char **argv)
 endsnippet
 
 
+snippet calloc "calloc()" b
+${1:type_t} *${4:pointer} = calloc(${3:1}, ${2:sizeof($1)});
+if($4 == NULL){ l_e("calloc($1),%s", strerror(errno));${5: return -1;} }
+
+${0}
+
+if($4){ free($4); $4 = NULL; }
+endsnippet
+
+
 snippet malloc "malloc()" b
 ${1:type_t} *${3:pointer} = malloc(${2:sizeof($1)});
-if($3 == NULL){ l_e("malloc($3),%s", strerror(errno));${4: return -1;} }
+if($3 == NULL){ l_e("malloc($1),%s", strerror(errno));${4: return -1;} }
 memset($3, 0, $2);
 
 ${0}
