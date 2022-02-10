@@ -1,36 +1,33 @@
 
 snippet hello "hello" b
 cmake_minimum_required(VERSION ${1:3.5})
+include(GNUInstallDirs)
 project(${2:ProjectName})
 
 set (${PROJECT_NAME}_VERSION_MAJOR ${3:0})
 set (${PROJECT_NAME}_VERSION_MINOR ${4:0})
 set (${PROJECT_NAME}_VERSION_PATCH ${5:1})
-set (${PROJECT_NAME}_VERSION
-	"${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
+set (${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
 add_definitions(-DPROG=\"${PROJECT_NAME}\")
-add_definitions(-std=c99)
+add_definitions(-DVER=\"${${PROJECT_NAME}_VERSION}\")
+add_definitions(-std=gnu99)
 
 FILE(GLOB SRC_FILES "${6:src/*.c}")
 
 find_package(PkgConfig REQUIRED)
-
-pkg_check_modules(${8:OPEN62541} REQUIRED IMPORTED_TARGET ${7:open62541})
+pkg_check_modules(${8:DEPMODULES} REQUIRED IMPORTED_TARGET ${7:libconfig,open62541})
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
-target_include_directories(${PROJECT_NAME} PRIVATE
-	${CMAKE_BINARY_DIR}
-)
-target_link_libraries(${PROJECT_NAME} PRIVATE
-	${$8_LIBRARIES}
-)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR} ${DEPMODULES_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPMODULES_LIBRARIES})
 
-INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION /usr/bin/)
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}) #TODO CMAKE_INSTALL_FULL_BINDIR是/bin,改为prefix
 endsnippet
 
 
 snippet pcm "pkg_check_modules" b
 pkg_check_modules(${2:OPEN62541} REQUIRED IMPORTED_TARGET ${1:open62541})
+${$2_INCLUDE_DIRS}
 ${$2_LIBRARIES}
 endsnippet
