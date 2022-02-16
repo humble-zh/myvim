@@ -2,12 +2,12 @@
 snippet hello "hello" b
 cmake_minimum_required(VERSION ${1:3.5})
 include(GNUInstallDirs)
-project(${2:ProjectName})
+project(${2:hello})
 
-set (${PROJECT_NAME}_VERSION_MAJOR ${3:0})
-set (${PROJECT_NAME}_VERSION_MINOR ${4:0})
-set (${PROJECT_NAME}_VERSION_PATCH ${5:1})
-set (${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
+set(${PROJECT_NAME}_VERSION_MAJOR ${3:0})
+set(${PROJECT_NAME}_VERSION_MINOR ${4:0})
+set(${PROJECT_NAME}_VERSION_PATCH ${5:1})
+set(${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
 add_definitions(-DPROG=\"${PROJECT_NAME}\")
 add_definitions(-DVER=\"${${PROJECT_NAME}_VERSION}\")
@@ -17,17 +17,115 @@ FILE(GLOB SRC_FILES "${6:src/*.c}")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(${8:DEPMODULES} REQUIRED IMPORTED_TARGET ${7:libconfig,open62541})
-
+${0}
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR} ${DEPMODULES_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPMODULES_LIBRARIES})
 
-INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}) #TODO CMAKE_INSTALL_FULL_BINDIR是/bin,改为prefix
+include(${CMAKE_SOURCE_DIR}/config/systemdservice.cmake)
+#lib目录下保存这一些动态库和安装控制脚本（postinst、postrm、preinst、prerm）  doc目录下是changelog和copyright等文件 这些东西是打包时要依赖的一些额外的东西
+#set(LIBS_DIR ${CMAKE_SOURCE_DIR}/config)
+#set(DOCS_DIR ${CMAKE_SOURCE_DIR}/doc)
+
+#install(FILES ${CMAKE_SOURCE_DIR}/xxx.conf DESTINATION "${CMAKE_ETC}") #将xxx.conf copy到/etc/
+#install(FILES ${LIBS_DIR}/xxx-4.8.so DESTINATION "${CMAKE_INSTALL_LIBDIR}") #既有bin又有so
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}) #TODO CMAKE_INSTALL_FULL_BINDIR是/bin,改为prefix
 endsnippet
 
 
-snippet pcm "pkg_check_modules" b
+snippet libhello "libhello" b
+cmake_minimum_required(VERSION ${1:3.5})
+include(GNUInstallDirs)
+project(${2:hello})
+
+set(${PROJECT_NAME}_VERSION_MAJOR ${3:0})
+set(${PROJECT_NAME}_VERSION_MINOR ${4:0})
+set(${PROJECT_NAME}_VERSION_PATCH ${5:1})
+set(${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
+
+add_definitions(-DPROG=\"${PROJECT_NAME}\")
+add_definitions(-DVER=\"${${PROJECT_NAME}_VERSION}\")
+add_definitions(-std=gnu99)
+
+FILE(GLOB SRC_FILES "src/*.c")
+FILE(GLOB HEADER_FILES "src/*.h")
+${0}
+add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${${PROJECT_NAME}_VERSION} SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
+
+configure_file(${CMAKE_SOURCE_DIR}/config/${6:libhello.pc}.in ${CMAKE_BINARY_DIR}/$6 @ONLY)
+
+install(FILES "${HEADER_FILES}" DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES "${CMAKE_BINARY_DIR}/$6" DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(TARGETS "${PROJECT_NAME}"
+    EXPORT "${PROJECT_NAME}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+)
+endsnippet
+
+
+snippet deb "deb package" b
+set(CPACK_GENERATOR "DEB") #说明要生成的是deb包
+set(CPACK_STRIP_FILES YES)
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME}) #设置程序名，就是程序安装后的名字
+set(CPACK_PACKAGE_DESCRIPTION "${1:a hello module}") #设置description
+#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "$1")
+set(CPACK_PACKAGE_VERSION_MAJOR ${${PROJECT_NAME}_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${${PROJECT_NAME}_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${${PROJECT_NAME}_VERSION_PATCH})
+#set(CPACK_PACKAGE_VERSION ${${PROJECT_NAME}_VERSION})
+set(CPACK_PACKAGE_VENDOR "${2:Guangdong Linux Center}")
+set(CPACK_PACKAGE_CONTACT "${3:li.zhihong@gd-linux.com}") #设置联系方式
+#set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64") #设置架构
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "${4:rsyslog}") #设置依赖 "libc6 (>= 2.3.1-6)"
+set(CPACK_DEBIAN_PACKAGE_SECTION "${5:utils}") #设置section:utils,web...
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "${6:Optional}") #设置priority
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${7:members of cpiyf@gd-linux.com}") #设置维护人
+#set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/preinst;${CMAKE_BINARY_DIR}/postinst;${CMAKE_BINARY_DIR}/prerm;${CMAKE_BINARY_DIR}/postrm")
+include(CPack)
+${0}
+endsnippet
+
+
+snippet pkg-config "pkg-config check_modules" b
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(${2:DEPMODULES} REQUIRED "${1:libconfig,libhlog}")
+${$2_INCLUDE_DIRS}
+${$2_LIBRARIES}
+${0}
+endsnippet
+
+
+snippet pkg_check_modules "pkg_check_modules" b
 pkg_check_modules(${2:OPEN62541} REQUIRED IMPORTED_TARGET ${1:open62541})
 ${$2_INCLUDE_DIRS}
 ${$2_LIBRARIES}
+$0
+endsnippet
+
+
+snippet test "test" b
+# 以下内容是测试相关
+enable_testing()
+
+# 定义一个宏，用来简化测试工作 <dev> <common> <model> <cmd> <result>
+macro (do_test arg1 arg2 arg3 arg4 result)
+  add_test (test_${arg1}_${arg2}_${arg3}_${arg4} modemd ${arg1} ${arg2} ${arg3} ${arg4})
+  set_tests_properties (test_${arg1}_${arg2}_${arg3}_${arg4} PROPERTIES PASS_REGULAR_EXPRESSION ${result})
+endmacro (do_test)
+
+set(MODEM_MODEL "EP06") #设置想要测试的模块型号
+
+if(${MODEM_MODEL} STREQUAL "EP06")
+    set(DEVPATH "/dev/ttyUSB6")
+elseif(${MODEM_MODEL} STREQUAL "ME3630")
+    set(DEVPATH "/dev/ttyUSB9")
+elseif(${MODEM_MODEL} STREQUAL "ME3630-W")
+    set(DEVPATH "/dev/ttyUSB1")
+endif()
+
+do_test (${DEVPATH} common ${MODEM_MODEL} ATCMNCMDID_OPEN_ECHO  "OK")               # 打开回显
 endsnippet
