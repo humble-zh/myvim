@@ -54,6 +54,20 @@ ${0}
 if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
+snippet openr "openreadonly()" b
+int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDONLY});
+if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
+
+char ${5:buff}[1024] = {0};
+int ${7:len} = read($3, $5, ${6:sizeof($5)});
+if($7 <= 0){ l_e("read(%s)->%d,%s", $1, $7, strerror(errno));${8: goto readerr;} }
+l_d("read(%s,%s)->%d", $1, $5, $7);
+${0}
+
+readerr:
+if($3 >= 0){ close($3); $3 = -1; }
+endsnippet
+
 snippet openrw "openreadwrite()" b
 int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDWR});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
