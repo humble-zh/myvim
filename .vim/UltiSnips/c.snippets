@@ -60,8 +60,8 @@ if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
 char ${5:buff}[1024] = {0};
 int ${7:len} = read($3, $5, ${6:sizeof($5)});
-if($7 <= 0){ l_e("read(%s)->%d,%s", $1, $7, strerror(errno));${8: goto readerr;} }
-l_d("read(%s,%s)->%d", $1, $5, $7);
+if($7 <= 0){ l_e("read(%d:%s)->%d,%s", $3, $1, $7, strerror(errno));${8: goto readerr;} }
+l_d("read(%d:%s,%s)->%d", $3, $1, $5, $7);
 ${0}
 
 readerr:
@@ -74,8 +74,8 @@ if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
 char ${5:buff}[1024] = {0};
 int ${7:len} = write($3, $5, ${6:strlen($5)});
-if($7 <= 0){ l_e("write(%s)->%d,%s", $1, $7, strerror(errno));${8: goto writeerr;} }
-l_d("write(%s,%s)->%d", $1, $5, $7);
+if($7 <= 0){ l_e("write(%d:%s)->%d,%s", $3, $1, $7, strerror(errno));${8: goto writeerr;} }
+l_d("write(%d:%s,%s)->%d", $3, $1, $5, $7);
 ${0}
 
 writeerr:
@@ -86,15 +86,15 @@ snippet openrw "openreadwrite()" b
 int ${3:fd} = open(${1:pathname}, ${2:O_RDWR});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
-if(write($3, ${5:buff}, ${6:strlen($5)}) < 0){ l_e("write(%s,%s),%s", $1, $5, strerror(errno)); ${7: goto writeerr;} }
-l_d("write(%s,%s)", $1, $5);
+if(write($3, ${5:buff}, ${6:strlen($5)}) < 0){ l_e("write(%d:%s,%s),%s", $3, $1, $5, strerror(errno)); ${7: goto writeerr;} }
+l_d("write(%d:%s,%s)", $3, $1, $5);
 
-if(lseek($3, 0, SEEK_SET) < 0){ l_e("lseek(%s),%s", $1, strerror(errno));${8: goto lseekerr;} }
+if(lseek($3, 0, SEEK_SET) < 0){ l_e("lseek(%d:%s),%s", $3, $1, strerror(errno));${8: goto lseekerr;} }
 
 char ${9:buff}[1024] = {0};
 int ${11:len} = read($3, $9, ${10:sizeof($9)});
-if($11 <= 0){ l_e("read(%s)->%d,%s", $1, $11, strerror(errno));${12: goto readerr;} }
-l_d("read(%s,%s)->%d", $1, $9, $11);
+if($11 <= 0){ l_e("read(%d:%s)->%d,%s", $3, $1, $11, strerror(errno));${12: goto readerr;} }
+l_d("read(%d:%s,%s)->%d", $3, $1, $9, $11);
 ${0}
 
 readerr:
@@ -104,7 +104,8 @@ if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
 snippet lseek "lseek()" b
-if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(%${5:d}),%s", ${4:$1}, strerror(errno));${6: goto lseekerr;} }
+if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(%d,$3,$2),%s", $1, strerror(errno));${6: goto lseekerr;} }
+l_d("lseek(%d,$3,$2),ok", $1);
 ${0}
 $6
 endsnippet
@@ -113,8 +114,8 @@ endsnippet
 snippet read "read()" b
 char $2[1024] = {0};
 int ${4:len} = read(${1:fd}, ${2:buff}, ${3:sizeof($2)});
-if($4 <= 0){ l_e("read(%${6:d})->%d,%s", ${5:$1}, $4, strerror(errno));${7: goto readerr;} }
-l_d("read(%$6,%s)->%d", $5, $2, $4);
+if($4 <= 0){ l_e("read(%d,$2)->%d,%s", $1, $4, strerror(errno));${7: goto readerr;} }
+l_d("read(%d,%s)->%d", $1, $2, $4);
 ${0}
 $7
 endsnippet
@@ -123,10 +124,10 @@ snippet write "write()" b
 char $2[1024] = {0};
 sprintf($2, "hello");
 int ${4:len} = write(${1:fd}, ${2:buff}, ${3:strlen($2)});
-if($4 <= 0){ l_e("write(%${6:d})->%d,%s", ${5:$1}, $4, strerror(errno));${7: goto readerr;} }
-l_d("write(%$6,%s)->%d", $5, $2, $4);
+if($4 <= 0){ l_e("write(%d,$2)->%d,%s", $1, $4, strerror(errno));${5: goto writeerr;} }
+l_d("write(%d,${6:%s},%d)->%d", $1, ${7:buff}, $3, $4);
 ${0}
-$7
+$5
 endsnippet
 
 
@@ -153,10 +154,10 @@ char rbuff[LEN4BUFF] = {0};
 int len = read(${1:fd}, rbuff, sizeof(rbuff));
 if(len < 0){
 	if(errno == EINTR){ ${2:continue;} }
-	l_e("read()->%d,%s", len, strerror(errno));
+	l_e("read(%d)->%d,%s", $1, len, strerror(errno));
 	goto readerr;
 }
-else if(len == 0){ l_i("read()->0,EOF"); }
+else if(len == 0){ l_i("read(%d)->0,EOF", $1); }
 else{
 	${0:TODO}
 	${3:break;}
@@ -167,7 +168,7 @@ endsnippet
 snippet recvfrom "recvfrom()" b
 char rbuff[LEN4BUFF] = {0};
 int len = recvfrom(${1:fd}, rbuff, sizeof(rbuff), 0, (void *)&raddr, &raddr_len);
-if(len < 0) { l_e("recvfrom()->%d,%s", len, strerror(errno)); goto recvfromerr; }
+if(len < 0) { l_e("recvfrom(%d)->%d,%s", $1, len, strerror(errno)); goto recvfromerr; }
 else if(len == 0) { ${2:continue;} }
 ${0:TODO}
 recvfromerr:
@@ -185,7 +186,7 @@ while(cnt--){
 	if(rc == 0){ l_e("Timeout"); continue; }
 	else if(rc < 0){
 		if(errno == EINTR){ continue; }
-		l_e("select()->%d,%s", rc, strerror(errno));
+		l_e("select(%d)->%d,%s", $2, rc, strerror(errno));
 		goto selecterr;
 	}
 	if(FD_ISSET($2, &(rset))){
@@ -193,10 +194,10 @@ while(cnt--){
 		int len = read($2, rbuff, sizeof(rbuff));
 		if(len < 0){
 			if(errno == EINTR){ continue; }
-			l_e("read()->%d,%s", len, strerror(errno));
+			l_e("read(%d)->%d,%s", $2, len, strerror(errno));
 			goto readerr;
 		}
-		else if(len == 0){ l_i("read()->0,EOF"); }
+		else if(len == 0){ l_i("read(%d)->0,EOF", $2); }
 		else{
 			${0:TODO}
 			break;
@@ -255,7 +256,7 @@ raddr.sin_port = htons(${3:12000});
 inet_pton(AF_INET, "${4:RemoteIP}", &raddr.sin_addr);
 
 const char *wbuff = "helloworld";
-if(sendto($1, wbuff, strlen(wbuff), 0, (void *)&raddr, sizeof(raddr)) < 0){ l_e("sendto(%s),%s", wbuff, strerror(errno)); goto sendtoerr; }
+if(sendto($1, wbuff, strlen(wbuff), 0, (void *)&raddr, sizeof(raddr)) < 0){ l_e("sendto(%d,%s),%s", $1, wbuff, strerror(errno)); goto sendtoerr; }
 
 socklen_t raddr_len = sizeof(raddr);
 int cnt = 3;
@@ -266,12 +267,12 @@ while(cnt--){
 	FD_SET($1, &rset);
 	if(select($1 + 1, &rset, NULL, NULL, &timeout) < 0){
 		if(errno == EINTR){ continue; }
-		l_e("select(),%s", strerror(errno)); goto selecterr;
+		l_e("select(%d),%s", $1, strerror(errno)); goto selecterr;
 	}
 	if(FD_ISSET($1, &(rset))){
 		int len = recvfrom($1, ${5:rbuff}, ${6:sizeof(rbuff)}, 0, (void *)&raddr, &raddr_len);
 		if(len == 0) { continue; }
-		if(len < 0) { l_e("recvfrom(),%s", strerror(errno)); goto recvfromerr; }
+		if(len < 0) { l_e("recvfrom(%d),%s", $1, strerror(errno)); goto recvfromerr; }
 		else{ ret = 0; break; }
 	}
 }
@@ -293,9 +294,9 @@ if($1 < 0){ l_e("socket() %s", strerror(errno)); exit(1); }
 
 struct sockaddr_in laddr,raddr;
 laddr.sin_family = AF_INET;
-laddr.sin_port = htons(atoi(RCVPORT));
+laddr.sin_port = htons(${2:12000});
 inet_pton(AF_INET, "0.0.0.0", &laddr.sin_addr);
-if(bind($1, (void *)&laddr, sizeof(laddr)) < 0){ l_e("bind() %s", strerror(errno)); exit(1); }
+if(bind($1, (void *)&laddr, sizeof(laddr)) < 0){ l_e("bind($2),%s", strerror(errno)); exit(1); }
 
 char buff[BUFFLEN] = {0};
 socklen_t raddr_len = sizeof(raddr);
@@ -308,17 +309,17 @@ while(1){
 	FD_SET($1, &rset);
 	if(select($1 + 1, &rset, NULL, NULL, &timeout) < 0){
 		if(errno == EINTR){ continue; }
-		l_e("select() %s", strerror(errno)); exit(1);
+		l_e("select(%d) %s", $1, strerror(errno)); exit(1);
 	}
 	if(FD_ISSET($1, &(rset))){
 		memset(buff, 0, BUFFLEN);
 		len = recvfrom($1, buff, BUFFLEN, 0, (void *)&raddr, &raddr_len);
 		if(len == 0) { continue; }
-		if(len < 0) { l_e("recvfrom() %s", strerror(errno)); exit(1); }
+		if(len < 0) { l_e("recvfrom(%d) %s", $1, strerror(errno)); exit(1); }
 
 		char ipstr[INET_ADDRSTRLEN] = {0};
 		inet_ntop(AF_INET, &raddr.sin_addr, ipstr, INET_ADDRSTRLEN);
-		l_d("recvfrom(%s:%d[%s])", ipstr, ntohs(raddr.sin_port), buff);
+		l_d("recvfrom(%d:%s:%d[%s])", $1, ipstr, ntohs(raddr.sin_port), buff);
 		${0:TODO Something here}
 	}
 }
@@ -345,7 +346,7 @@ raddr.sin_family = AF_INET;
 raddr.sin_port = htons(${3:12000});
 inet_pton(AF_INET, "${4:RemoteIP}", &raddr.sin_addr);
 
-if(connect($1, (void *)&raddr, sizeof(raddr)) < 0){ l_e("connect($4:$3),%s", strerror(errno)); goto connecterr; }
+if(connect($1, (void *)&raddr, sizeof(raddr)) < 0){ l_e("connect(%d:$4:$3),%s", $1, strerror(errno)); goto connecterr; }
 
 ${0://read and write}
 
