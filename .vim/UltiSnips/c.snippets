@@ -46,7 +46,7 @@ endsnippet
 
 
 snippet open "open()" b
-int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDWR});
+int ${3:fd} = open(${1:pathname}, ${2:O_RDWR});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
 ${0}
@@ -55,7 +55,7 @@ if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
 snippet openr "openreadonly()" b
-int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDONLY});
+int ${3:fd} = open(${1:pathname}, ${2:O_RDONLY});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
 char ${5:buff}[1024] = {0};
@@ -68,8 +68,22 @@ readerr:
 if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
+snippet openw "openwriteonly()" b
+int ${3:fd} = open(${1:pathname}, ${2:O_WRONLY});
+if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
+
+char ${5:buff}[1024] = {0};
+int ${7:len} = write($3, $5, ${6:strlen($5)});
+if($7 <= 0){ l_e("write(%s)->%d,%s", $1, $7, strerror(errno));${8: goto writeerr;} }
+l_d("write(%s,%s)->%d", $1, $5, $7);
+${0}
+
+writeerr:
+if($3 >= 0){ close($3); $3 = -1; }
+endsnippet
+
 snippet openrw "openreadwrite()" b
-int ${3:filedescriptor} = open(${1:pathname}, ${2:O_RDWR});
+int ${3:fd} = open(${1:pathname}, ${2:O_RDWR});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
 if(write($3, ${5:buff}, ${6:strlen($5)}) < 0){ l_e("write(%s,%s),%s", $1, $5, strerror(errno)); ${7: goto writeerr;} }
@@ -90,26 +104,29 @@ if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
 snippet lseek "lseek()" b
-if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(),%s", strerror(errno));${4: goto lseekerr;} }
+if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(%${5:d}),%s", ${4:$1}, strerror(errno));${6: goto lseekerr;} }
 ${0}
-$4
-endsnippet
-
-
-snippet write "write()" b
-if(write(${1:fd}, ${2:buff}, ${3:strlen(buff)}) < 0){ l_e("write($2),%s", strerror(errno)); ${4: goto writeerr;} }
-l_d("write(%s)", $2);
-${0}
-$4
+$6
 endsnippet
 
 
 snippet read "read()" b
+char $2[1024] = {0};
 int ${4:len} = read(${1:fd}, ${2:buff}, ${3:sizeof($2)});
-if($4 <= 0){ l_e("read()->%d,%s", $4, strerror(errno));${5: goto readerr;} }
-l_d("read()->%s", $2);
+if($4 <= 0){ l_e("read(%${6:d})->%d,%s", ${5:$1}, $4, strerror(errno));${7: goto readerr;} }
+l_d("read(%$6,%s)->%d", $5, $2, $4);
 ${0}
-$5
+$7
+endsnippet
+
+snippet write "write()" b
+char $2[1024] = {0};
+sprintf($2, "hello");
+int ${4:len} = write(${1:fd}, ${2:buff}, ${3:strlen($2)});
+if($4 <= 0){ l_e("write(%${6:d})->%d,%s", ${5:$1}, $4, strerror(errno));${7: goto readerr;} }
+l_d("write(%$6,%s)->%d", $5, $2, $4);
+${0}
+$7
 endsnippet
 
 
@@ -229,7 +246,7 @@ endsnippet
 
 snippet socketudpclient "socketudpclient()" b
 int ret = -1;
-int ${1:filedescriptor} = socket(AF_INET, SOCK_DGRAM, 0/*IPPROTO_UDP*/);
+int ${1:sd} = socket(AF_INET, SOCK_DGRAM, 0/*IPPROTO_UDP*/);
 if($1 < 0){ l_e("socket(),%s", strerror(errno)); ${2:goto socketerr;} }
 
 struct sockaddr_in raddr;
