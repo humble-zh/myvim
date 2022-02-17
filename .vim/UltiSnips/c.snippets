@@ -326,6 +326,38 @@ while(1){
 if($1 >= 0){ close($1); $1 = -1; }
 endsnippet
 
+snippet sockettcpclient "sockettcpclient()" b
+int ret = -1;
+int ${1:sd} = socket(AF_INET, SOCK_STREAM, 0/* IPPROTO_TCP,IPPROTO_SCTP */);
+if($1 < 0){ l_e("socket(),%s", strerror(errno)); ${2:goto socketerr;} }
+
+//bind()可省
+int val = 1;
+if(setsockopt($1, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) < 0){ l_e("setsockopt(%d),%s", $1, strerror(errno)); goto setsockopterr; }
+struct sockaddr_in laddr;
+laddr.sin_family = AF_INET;
+laddr.sin_port = htons(${2:12000});
+laddr.sin_addr.s_addr = htonl(INADDR_ANY); //inet_pton(AF_INET, "0.0.0.0", &laddr.sin_addr);
+if(bind($1, (void *)&laddr, sizeof(laddr)) < 0){ l_e("bind(%d),%s", $1, strerror(errno0); goto binderr; }
+
+struct sockaddr_in raddr;
+raddr.sin_family = AF_INET;
+raddr.sin_port = htons(${3:12000});
+inet_pton(AF_INET, "${4:RemoteIP}", &raddr.sin_addr);
+
+if(connect($1, (void *)&raddr, sizeof(raddr)) < 0){ l_e("connect($4:$3),%s", strerror(errno)); goto connecterr; }
+
+${0://read and write}
+
+setsockopterr:
+binderr:
+connecterr:
+if($1 >= 0){ close($1); $1 = -1; }
+socketerr:
+return ret;
+endsnippet
+
+
 snippet termination "termination function" b
 static void termination(int sig) { l_i("stoping"); need_termination = 1; }
 endsnippet
