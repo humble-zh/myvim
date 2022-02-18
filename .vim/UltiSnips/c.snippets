@@ -137,6 +137,76 @@ ${0}
 endsnippet
 
 
+snippet tailq "tailq" b
+typedef struct _$1 ${1:worknode_t};
+struct _$1{
+    char key[256];
+    int32_t len;
+    void *buff; //${0:TODO}
+    TAILQ_ENTRY(_$1) ${2:worktailq_entry};
+};
+
+TAILQ_HEAD(${3:worktailq_head}, _$1)   ${4:workhead};
+static pthread_mutex_t ${5:workmutex} = PTHREAD_MUTEX_INITIALIZER;
+
+//入队
+$1 *node = calloc(1, sizeof($1));
+if(node == NULL){ l_e("calloc($1),%s", strerror(errno)); goto callocnodeerr; }
+l_d("calloc(node)->%p", node);
+
+sprintf(node->key, "hello"); //TODO
+node->len = 1024;
+node->buff = calloc(1, node->len);
+if(node->buff == NULL){ l_e("calloc(node->buff),%s", strerror(errno)); goto callocnodebufferr; }
+l_d("calloc(node->buff:%d)->%p", node->len, node->buff);
+memcpy(node->buff, /*TODO*/, node->len);
+
+pthread_mutex_lock(&$5); l_d("locked $4 tailq");
+#if 0
+worknode_t *fnode = NULL;
+TAILQ_FOREACH(fnode, &$4, $2) {
+    if(!strcmp(fnode->key, node->key)){
+        l_i("fnode[%s] == node[%s]", fnode->key, node->key);
+        break;
+    }
+    else{ l_d("fnode[%s] != node[%s]", fnode->key, node->key); }
+}
+if(!fnode){ TAILQ_INSERT_TAIL(&$4, node, $2); l_i("TAILQ_INSERT_TAIL($4, %p, $2)", node); }
+#else
+TAILQ_INSERT_TAIL(&$4, node, $2); l_i("TAILQ_INSERT_TAIL($4, %p, $2)", node);
+#endif
+pthread_mutex_unlock(&$5); l_d("unlocked $4 tailq");
+
+return 0;
+othererr:
+if(node->buff){ l_d("free(node->buff:%p)", node->buff); free(node->buff); node->buff = NULL; }
+callocnodebufferr:
+if(node){ l_d("free(node:%p)", node); free(node); node = NULL; }
+callocnodeerr:
+
+//出队
+while(1){
+    if(!TAILQ_EMPTY(&$4)){
+        $1 *node = TAILQ_FIRST(&$4);
+        pthread_mutex_lock(&$5);
+        TAILQ_REMOVE(&$4, node, $2);
+        pthread_mutex_unlock(&$5);
+
+        l_d("node->len:%d", node->len); //TODO with node
+
+        if(node->buff){ l_d("free(node->buff:%p)", node->buff); free(node->buff); node->buff = NULL; }
+        if(node){ l_d("free(node:%p)", node); free(node); node = NULL; }
+    }
+}
+endsnippet
+
+
+snippet nanosleep "nanosleep()" b
+struct timespec slptm = { .tv_sec = ${1:秒}, .tv_nsec = ${2:5000000/*纳秒,5ms*/} };
+nanosleep(&slptm, NULL);
+endsnippet
+
+
 snippet popen "popen()" b
 FILE *p = popen("${1:ifconfig eth0.1|grep 'HWaddr'|awk '{print $5}'|tr -d ':'}", "r");
 if(!p){ l_e("popen(),'%s'", strerror(errno)); goto popenerr; }
