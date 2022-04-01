@@ -46,6 +46,10 @@ endsnippet
 
 
 snippet open "open()" b
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 int ${3:fd} = open(${1:pathname}, ${2:O_RDWR});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
@@ -55,6 +59,10 @@ if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
 snippet openr "openreadonly()" b
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 int ${3:fd} = open(${1:pathname}, ${2:O_RDONLY});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
@@ -69,6 +77,10 @@ if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
 snippet openw "openwriteonly()" b
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 int ${3:fd} = open(${1:pathname}, ${2:O_WRONLY});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
@@ -83,6 +95,10 @@ if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
 snippet openrw "openreadwrite()" b
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 int ${3:fd} = open(${1:pathname}, ${2:O_RDWR});
 if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
 
