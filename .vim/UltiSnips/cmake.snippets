@@ -1,35 +1,80 @@
+snippet print "print def" b
+function(print)
+    foreach(var ${ARGN})
+        message("${var} = ${${var}}")
+    endforeach()
+endfunction()
 
-snippet hello "hello" b
-cmake_minimum_required(VERSION ${1:3.5})
-include(GNUInstallDirs)
-project(${2:hello})
+function(print_env)
+    foreach(var ${ARGN})
+        message("${var} = $ENV{${var}}")
+    endforeach()
+endfunction()
+endsnippet
 
-set(${PROJECT_NAME}_VERSION_MAJOR ${3:0})
-set(${PROJECT_NAME}_VERSION_MINOR ${4:0})
-set(${PROJECT_NAME}_VERSION_PATCH ${5:1})
-set(${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
 
-add_definitions(-DPROG=\"${PROJECT_NAME}\")
-add_definitions(-DVER=\"${${PROJECT_NAME}_VERSION}\")
-add_definitions(-std=gnu99)
+snippet hello "hello exec" b
+cmake_minimum_required(VERSION 3.9)
+project(${1:hello} VERSION 0.1.2.3 DESCRIPTION "an hello program" LANGUAGES C)
+
+function(print)
+    foreach(var ${ARGN})
+        message("${var} = ${${var}}")
+    endforeach()
+endfunction()
+
+print(PROJECT_VERSION $1_VERSION PROJECT_VERSION_MAJOR $1_VERSION_MAJOR PROJECT_VERSION_MINOR $1_VERSION_MINOR PROJECT_VERSION_PATCH $1_VERSION_PATCH PROJECT_VERSION_TWEAK $1_VERSION_TWEAK)
+print(PROJECT_DESCRIPTION)
+
+#define HELLO_VERSION_MAJOR @$1_VERSION_MAJOR@
+#define HELLO_VERSION_MINOR @$1_VERSION_MINOR@
+#define HELLO_VERSION_PATCH @$1_VERSION_PATCH@
+#define HELLO_VERSION_TWEAK @$1_VERSION_TWEAK@
+configure_file($1conf.h.in $1conf.h)
+
+#add_definitions(-DPROG=\"${PROJECT_NAME}\")
+#add_definitions(-DVER=\"${${PROJECT_NAME}_VERSION}\")
+#add_definitions(-std=gnu99)
 
 FILE(GLOB SRC_FILES "${6:src/*.c}")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(${8:DEPMODULES} REQUIRED IMPORTED_TARGET ${7:libconfig,open62541})
+pkg_check_modules(${8:DEPMODULES} REQUIRED IMPORTED_TARGET ${7:libconfig})
 ${0}
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR} ${DEPMODULES_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${DEPMODULES_LIBRARIES})
 
-include(${CMAKE_SOURCE_DIR}/config/systemdservice.cmake)
+
+set(CMAKE_INSTALL_PREFIX "/")
+include(GNUInstallDirs)
+print(CMAKE_INSTALL_PREFIX)
+print(CMAKE_INSTALL_BINDIR CMAKE_INSTALL_FULL_BINDIR)
+print(CMAKE_INSTALL_SBINDIR CMAKE_INSTALL_FULL_SBINDIR)
+print(CMAKE_INSTALL_LIBEXECDIR CMAKE_INSTALL_FULL_LIBEXECDIR)
+print(CMAKE_INSTALL_SYSCONFDIR CMAKE_INSTALL_FULL_SYSCONFDIR)
+print(CMAKE_INSTALL_SHAREDSTATEDIR CMAKE_INSTALL_FULL_SHAREDSTATEDIR)
+print(CMAKE_INSTALL_LOCALSTATEDIR CMAKE_INSTALL_FULL_LOCALSTATEDIR)
+print(CMAKE_INSTALL_RUNSTATEDIR CMAKE_INSTALL_FULL_RUNSTATEDIR)
+print(CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_FULL_LIBDIR)
+print(CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_FULL_INCLUDEDIR)
+print(CMAKE_INSTALL_OLDINCLUDEDIR CMAKE_INSTALL_FULL_OLDINCLUDEDIR)
+print(CMAKE_INSTALL_DATAROOTDIR CMAKE_INSTALL_FULL_DATAROOTDIR)
+print(CMAKE_INSTALL_DATADIR CMAKE_INSTALL_FULL_DATADIR)
+print(CMAKE_INSTALL_INFODIR CMAKE_INSTALL_FULL_INFODIR)
+print(CMAKE_INSTALL_LOCALEDIR CMAKE_INSTALL_FULL_LOCALEDIR)
+print(CMAKE_INSTALL_MANDIR CMAKE_INSTALL_FULL_MANDIR)
+print(CMAKE_INSTALL_DOCDIR CMAKE_INSTALL_FULL_DOCDIR)
+
+
+#include(${CMAKE_SOURCE_DIR}/config/systemdservice.cmake)
 #lib目录下保存这一些动态库和安装控制脚本（postinst、postrm、preinst、prerm）  doc目录下是changelog和copyright等文件 这些东西是打包时要依赖的一些额外的东西
 #set(LIBS_DIR ${CMAKE_SOURCE_DIR}/config)
 #set(DOCS_DIR ${CMAKE_SOURCE_DIR}/doc)
 
-#install(FILES ${CMAKE_SOURCE_DIR}/xxx.conf DESTINATION "${CMAKE_ETC}") #将xxx.conf copy到/etc/
-#install(FILES ${LIBS_DIR}/xxx-4.8.so DESTINATION "${CMAKE_INSTALL_LIBDIR}") #既有bin又有so
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}) #TODO CMAKE_INSTALL_FULL_BINDIR是/bin,改为prefix
+#install(FILES ${CMAKE_SOURCE_DIR}/xxx.conf DESTINATION "${CMAKE_INSTALL_FULL_SYSCONFDIR}")
+#install(FILES ${LIBS_DIR}/xxx-4.8.so DESTINATION "${CMAKE_INSTALL_FULL_LIBDIR}")
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})
 endsnippet
 
 
@@ -71,20 +116,23 @@ snippet deb "deb package" b
 set(CPACK_GENERATOR "DEB") #说明要生成的是deb包
 set(CPACK_STRIP_FILES YES)
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME}) #设置程序名，就是程序安装后的名字
-set(CPACK_PACKAGE_DESCRIPTION "${1:a hello module}") #设置description
-#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "$1")
-set(CPACK_PACKAGE_VERSION_MAJOR ${${PROJECT_NAME}_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${${PROJECT_NAME}_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${${PROJECT_NAME}_VERSION_PATCH})
-#set(CPACK_PACKAGE_VERSION ${${PROJECT_NAME}_VERSION})
-set(CPACK_PACKAGE_VENDOR "${2:Guangdong Linux Center}")
-set(CPACK_PACKAGE_CONTACT "${3:li.zhihong@gd-linux.com}") #设置联系方式
+set(CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}") #设置description
+#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+#set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+print(CPACK_PACKAGE_VERSION_MAJOR)
+set(CPACK_PACKAGE_VENDOR "${1:Guangdong Linux Center}")
+set(CPACK_PACKAGE_CONTACT "${2:li.zhihong@gd-linux.com}") #设置联系方式
 #set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64") #设置架构
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "${4:rsyslog}") #设置依赖 "libc6 (>= 2.3.1-6)"
-set(CPACK_DEBIAN_PACKAGE_SECTION "${5:utils}") #设置section:utils,web...
-set(CPACK_DEBIAN_PACKAGE_PRIORITY "${6:Optional}") #设置priority
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${7:members of cpiyf@gd-linux.com}") #设置维护人
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "${3:rsyslog}") #设置依赖 "libc6 (>= 2.3.1-6)"
+set(CPACK_DEBIAN_PACKAGE_SECTION "${4:utils}") #设置section:utils,web...
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "${5:Optional}") #设置priority
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${6:members of cpiyf@gd-linux.com}") #设置维护人
 #set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/preinst;${CMAKE_BINARY_DIR}/postinst;${CMAKE_BINARY_DIR}/prerm;${CMAKE_BINARY_DIR}/postrm")
+print(CPACK_PACKAGE_VERSION)
+#set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME})
 include(CPack)
 ${0}
 endsnippet
