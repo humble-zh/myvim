@@ -1,12 +1,11 @@
-
 snippet hello "hello exec" b
 cmake_minimum_required(VERSION 3.9)
 project(${1:hello} VERSION 0.1.2.3 DESCRIPTION "an hello program" LANGUAGES C)
 
+#submodule
+
 # git submodule add https://url/cmake.git
 #include(cmake/lib.cmake)
-#include(cmake/submodule.cmake)
-
 #print(PROJECT_VERSION $1_VERSION PROJECT_VERSION_MAJOR $1_VERSION_MAJOR PROJECT_VERSION_MINOR $1_VERSION_MINOR PROJECT_VERSION_PATCH $1_VERSION_PATCH PROJECT_VERSION_TWEAK $1_VERSION_TWEAK)
 #print(PROJECT_DESCRIPTION)
 
@@ -95,6 +94,19 @@ install(TARGETS "${PROJECT_NAME}"
 endsnippet
 
 
+snippet systemd "systemd service" b
+include(cmake/systemdservice.cmake)
+if (SYSTEMD_FOUND)
+    set(WITH_SYSTEMD "ON")
+    message(STATUS "systemd services install dir: ${SYSTEMD_SERVICES_INSTALL_DIR}")
+    configure_file(${CMAKE_SOURCE_DIR}/${1:config}/${PROJECT_NAME}.service.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.service @ONLY)
+    install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT cp)
+else()
+    set(WITH_SYSTEMD "OFF")
+endif (SYSTEMD_FOUND)
+endsnippet
+
+
 snippet deb "deb package" b
 set(CPACK_GENERATOR "DEB") #说明要生成的是deb包
 set(CPACK_STRIP_FILES YES)
@@ -118,6 +130,24 @@ print(CPACK_PACKAGE_VERSION)
 #set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME})
 include(CPack)
 ${0}
+endsnippet
+
+
+snippet submodule "download all submodule" b
+find_package(Git QUIET) # DOWNLOAD ALL THE SUBMODULES START
+if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    # Update submodules as needed
+    option(GIT_SUBMODULE "Check submodules during build" ON)
+    if(GIT_SUBMODULE)
+        message(STATUS "Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+        endif()
+    endif()
+endif() # DOWNLOAD ALL THE SUBMODULES END
 endsnippet
 
 
