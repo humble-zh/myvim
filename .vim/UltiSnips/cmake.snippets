@@ -177,3 +177,15 @@ endif()
 
 do_test (${DEVPATH} common ${MODEM_MODEL} ATCMNCMDID_OPEN_ECHO  "OK") # 打开回显
 endsnippet
+
+snippet print "print function" b
+function(print)
+    foreach(var ${ARGN})
+        message("${var} = ${${var}}")
+    endforeach()
+endfunction()
+endsnippet
+
+snippet zzzzz "zzzz" b
+zzzz
+endsnippet
