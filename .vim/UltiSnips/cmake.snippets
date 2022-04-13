@@ -186,6 +186,14 @@ function(print)
 endfunction()
 endsnippet
 
+snippet print_env "print_env function" b
+function(print_env)
+    foreach(var ${ARGN})
+        message("${var} = $ENV{${var}}")
+    endforeach()
+endfunction()
+endsnippet
+
 snippet zzzzz "zzzz" b
 zzzz
 endsnippet
