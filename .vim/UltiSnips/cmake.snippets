@@ -84,6 +84,21 @@ install(TARGETS "${PROJECT_NAME}"
 endsnippet
 
 
+snippet systemdservice.cmake "systemdservice.cmake" b
+include(FindPkgConfig)
+
+pkg_check_modules(SYSTEMD "systemd")
+
+if (SYSTEMD_FOUND AND "${SYSTEMD_SERVICES_INSTALL_DIR}" STREQUAL "")
+    execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=systemdsystemunitdir systemd OUTPUT_VARIABLE SYSTEMD_SERVICES_INSTALL_DIR)
+    string(REGEX REPLACE "[ \t\n]+" "" SYSTEMD_SERVICES_INSTALL_DIR "${SYSTEMD_SERVICES_INSTALL_DIR}")
+
+elseif (NOT SYSTEMD_FOUND AND SYSTEMD_SERVICES_INSTALL_DIR)
+    message (FATAL_ERROR "Variable SYSTEMD_SERVICES_INSTALL_DIR is defined, but we can't find systemd using pkg-config")
+endif()
+endsnippet
+
+
 snippet systemd "systemd service" b
 include(${CMAKE_SOURCE_DIR}/cmake/systemdservice.cmake)
 if (SYSTEMD_FOUND)
