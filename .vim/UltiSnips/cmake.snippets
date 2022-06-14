@@ -34,9 +34,9 @@ set(CMAKE_INSTALL_PREFIX "/")
 include(GNUInstallDirs)
 
 
-#include(${CMAKE_SOURCE_DIR}/config/systemdservice.cmake)
+#include(${CMAKE_SOURCE_DIR}/cmake/systemdservice.cmake)
 #lib目录下保存这一些动态库和安装控制脚本（postinst、postrm、preinst、prerm）  doc目录下是changelog和copyright等文件 这些东西是打包时要依赖的一些额外的东西
-#set(LIBS_DIR ${CMAKE_SOURCE_DIR}/config)
+#set(LIBS_DIR ${CMAKE_SOURCE_DIR}/conf)
 #set(DOCS_DIR ${CMAKE_SOURCE_DIR}/doc)
 
 #install(FILES ${CMAKE_SOURCE_DIR}/xxx.conf DESTINATION "${CMAKE_INSTALL_FULL_SYSCONFDIR}")
@@ -115,24 +115,19 @@ endsnippet
 snippet deb "deb package" b
 set(CPACK_GENERATOR "DEB") #说明要生成的是deb包
 set(CPACK_STRIP_FILES YES)
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME}) #设置程序名，就是程序安装后的名字
-set(CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}") #设置description
-#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-#set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-print(CPACK_PACKAGE_VERSION_MAJOR)
+set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME}) #设置程序名，就是程序安装后的名字
+set(CPACK_PACKAGE_DESCRIPTION ${CMAKE_PROJECT_DESCRIPTION}) #设置description
+#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CMAKE_PROJECT_DESCRIPTION}")
+set(CPACK_PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
 set(CPACK_PACKAGE_VENDOR "${1:Guangdong Linux Center}")
 set(CPACK_PACKAGE_CONTACT "${2:li.zhihong@gd-linux.com}") #设置联系方式
 #set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64") #设置架构
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "${3:rsyslog}") #设置依赖 "libc6 (>= 2.3.1-6)"
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "${3:rsyslog,libconfig}") #设置依赖 "libc6 (>= 2.3.1-6)"
 set(CPACK_DEBIAN_PACKAGE_SECTION "${4:utils}") #设置section:utils,web...
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "${5:Optional}") #设置priority
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${6:members of cpiyf@gd-linux.com}") #设置维护人
 #set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/preinst;${CMAKE_BINARY_DIR}/postinst;${CMAKE_BINARY_DIR}/prerm;${CMAKE_BINARY_DIR}/postrm")
-print(CPACK_PACKAGE_VERSION)
-#set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME})
+#set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}) #TODO CPACK_SYSTEM_NAME
 include(CPack)
 ${0}
 endsnippet
