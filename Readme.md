@@ -55,123 +55,120 @@ ln -s ~/.vimrc ~/.config/nvim/init.vim
 ```bash
 #!/usr/bin/zsh
 
-. ~/.zshrc
-
-plink="https://github.com.cnpmjs.org/"
+plink="https://github.91chi.fun//https://github.com/"
 olink="https://github.com/"
-
 
 a="mhinz"
 b="vim-startify"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="vim-airline"
 b="vim-airline"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="vim-airline"
 b="vim-airline-themes"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="sjl"
 b="badwolf"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="airblade"
 b="vim-gitgutter"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="vim-scripts"
 b="winmanager"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="terryma"
 b="vim-multiple-cursors"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="brooth"
 b="far.vim"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="easymotion"
 b="vim-easymotion"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="itchyny"
 b="vim-cursorword"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="lfv89"
 b="vim-interestingwords"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="dense-analysis"
 b="ale"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="farmergreg"
 b="vim-lastplace"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="xolox"
 b="vim-misc"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="xolox"
 b="vim-session"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="junegunn"
 b="vim-easy-align"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="tpope"
 b="vim-surround"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="tpope"
 b="vim-abolish"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="vim-utils"
 b="vim-man"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="ctrlpvim"
 b="ctrlp.vim"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="vim-scripts"
 b="taglist.vim"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="vim-scripts"
 b="ag.vim"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="godlygeek"
 b="tabular"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="plasticboy"
 b="vim-markdown"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="kannokanno"
 b="previm"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="tyru"
 b="open-browser.vim"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="SirVer"
 b="ultisnips"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 a="honza"
 b="vim-snippets"
-git clone ${plink}${a}/${b} /root/.vim/plugged/${b} && { cd /root/.vim/plugged/${b} && grset origin ${olink}${a}/${b}; cd ; }
+git clone ${plink}${a}/${b} ~/.vim/plugged/${b} && { cd ~/.vim/plugged/${b} && git remote set-url origin ${olink}${a}/${b}; cd ; }
 
 
 echo "please install  'neoclide/coc.nvim', {'branch': 'release'} at last"
