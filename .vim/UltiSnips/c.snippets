@@ -795,8 +795,83 @@ static void mosq_rcv(struct mosquitto *mosq, void *obj, const struct mosquitto_m
 ${0}
 endsnippet
 
-
 snippet mqtt.h "mqtt.h" b
+#ifndef __MQTT_H__
+#define __MQTT_H__
+#include <mosquitto.h>
+
+#define MQTT_BASEATTRIBUTES \
+    const char *addr;\
+    int32_t port;\
+    const char *clientid;\
+    int clean_session;\
+    const char *usr;\
+    const char *pwd;\
+    int32_t keepalive;\
+    int8_t qos;\
+    struct mosquitto *mosq;\
+    uint32_t pub_cnt;
+
+typedef struct {
+    MQTT_BASEATTRIBUTES
+}mqtt_t;
+
+extern int mqtt_init(mqtt_t *mqttptr);
+extern int mqtt_destroy(mqtt_t *mqttptr);
+extern int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos);
+
+#endif //__MQTT_H__
+endsnippet
+
+
+snippet mqtt.c "mqtt.c" b
+#include "l.h"
+#include "mqtt.h"
+
+static void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int rc) {
+    mqtt_t *mqttptr = (mqtt_t *)obj; ld("MQTT connected,%d", rc);
+    rc = mosquitto_subscribe(mqttptr->mosq, 0, "hello", 1);
+    li("mosquitto_subscribe(hello)->%d, %s", rc, mosquitto_strerror(rc));
+}
+static void mosq_cb_on_disconnect(struct mosquitto *mosq, void *obj, int rc) { mqtt_t *mqttptr = (mqtt_t *)obj; ld("MQTT disconnected"); }
+static void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos) { ld("topic subed"); }
+static void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string) { /*ld("%s", string);*/ }
+static void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid) { mqtt_t *mqttptr = (mqtt_t *)obj; ld("MQTT Message published. count:%d", ++mqttptr->pub_cnt); }
+
+int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos) {
+    const char *error_string = NULL;
+    if (NULL == mosq || NULL == topic || NULL == payload || payloadlen <= 0) { le("Param invalid"); return -1; }
+    int32_t rc = mosquitto_publish(mosq, NULL, topic, payloadlen, payload, qos, true);
+    if (MOSQ_ERR_SUCCESS != rc) { error_string = mosquitto_strerror(rc); le("pub(%s,%s)->%d,%s", topic, payload, rc, error_string); return -1; }
+    ld("pub(%s,%s) ok", topic, payload);
+    return 0;
+}
+
+static void mosq_rcv(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message) {
+    mqtt_t *mqttptr = (mqtt_t *)obj;
+    char *recv_str = (char *)message->payload;
+    ld("%s get %s %s", mqttptr->clientid, (char *)message->topic, recv_str);
+    return ;
+}
+
+int mqtt_init(mqtt_t *mqttptr) {
+    mqttptr->mosq = mosquitto_new(mqttptr->clientid, true, mqttptr);
+    if (NULL == mqttptr->mosq) { le("mosquitto_new() failed"); return -1; }
+    mosquitto_username_pw_set(mqttptr->mosq, mqttptr->usr, mqttptr->pwd);
+    mosquitto_connect_callback_set(mqttptr->mosq, mosq_cb_on_connect);
+    mosquitto_disconnect_callback_set(mqttptr->mosq, mosq_cb_on_disconnect);
+    mosquitto_subscribe_callback_set(mqttptr->mosq, mosq_cb_on_sub);
+    mosquitto_publish_callback_set(mqttptr->mosq, mosq_cb_on_pub);
+    mosquitto_log_callback_set(mqttptr->mosq, mosq_cb_on_log);
+    mosquitto_message_callback_set(mqttptr->mosq, mosq_rcv);
+    // mosquitto_will_set(mqttptr->mosq, "Message/LastWill", strlen("hello"), "hello", 1, false);
+}
+
+int mqtt_destroy(mqtt_t *mqttptr){ mosquitto_destroy(mqttptr->mosq); }
+endsnippet
+
+
+snippet mqttevent.h "mqttevent.h" b
 #ifndef __MQTT_H__
 #define __MQTT_H__
 #include <mosquitto.h>
