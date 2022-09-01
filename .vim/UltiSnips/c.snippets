@@ -726,7 +726,7 @@ endsnippet
 
 snippet mosqfun "mosqfun" b
 static int32_t connected = 0;
-static uint32_t pub_cnt = 0;
+static int32_t mid = 0;
 
 static void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int rc)
 {
@@ -758,10 +758,7 @@ static void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_c
 
 static void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string) { /*l_d("%s", string);*/ }
 
-static void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid)
-{
-	l_d("MQTT Message published. count:%d", ++pub_cnt);
-}
+static void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid) { l_d("MQTT Message %d published", mid); }
 
 static int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen,
 		const char *payload, int qos)
@@ -810,7 +807,7 @@ snippet mqtt.h "mqtt.h" b
     int32_t keepalive;\
     int8_t qos;\
     struct mosquitto *mosq;\
-    uint32_t pub_cnt;
+    int32_t mid;
 
 typedef struct {
     MQTT_BASEATTRIBUTES
@@ -818,7 +815,7 @@ typedef struct {
 
 extern int mqtt_init(mqtt_t *mqttptr);
 extern int mqtt_destroy(mqtt_t *mqttptr);
-extern int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos);
+extern int mqtt_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos);
 
 #endif //__MQTT_H__
 endsnippet
@@ -836,7 +833,8 @@ static void mosq_cb_on_connect(struct mosquitto *mosq, void *obj, int rc) {
 static void mosq_cb_on_disconnect(struct mosquitto *mosq, void *obj, int rc) { mqtt_t *mqttptr = (mqtt_t *)obj; ld("MQTT disconnected"); }
 static void mosq_cb_on_sub(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos) { ld("topic subed"); }
 static void mosq_cb_on_log(struct mosquitto *mosq, void *obj, int leve_log, const char *string) { /*ld("%s", string);*/ }
-static void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid) { mqtt_t *mqttptr = (mqtt_t *)obj; ld("MQTT Message published. count:%d", ++mqttptr->pub_cnt); }
+static void mosq_cb_on_pub(struct mosquitto *mosq, void *obj, int mid) { mqtt_t
+*mqttptr = (mqtt_t *)obj; ld("MQTT Message %d published", mid); }
 
 int mosq_pub(struct mosquitto *mosq, const char *topic, int32_t payloadlen, const char *payload, int qos) {
     const char *error_string = NULL;
@@ -928,7 +926,7 @@ void *taskarg;
 
 typedef struct {
 	MQTT_BASEATTRIBUTES
-		int32_t pub_cnt;
+		int32_t mid;
 	const char *subtopic;
 	const char *pubtopic;
 }mqtt_t;
