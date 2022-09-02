@@ -198,7 +198,8 @@ vim +PluginInstall +qall
 sudo pacman -S bear ccls npm
 #nodejs-lts-erbium
 #ubuntu
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+#curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt install nodejs
 
 cd $(当前目录)
@@ -229,7 +230,61 @@ ln -s $(pwd)/coc-settings.json ~/.vim/
 `:CocInstall coc-json coc-ccls coc-snippets` 安装插件
 
 
-若报错如下，
+---
+
+1. 若报错
+
+```
+[coc.nvim] build/index.js not found, please install dependencies and compile coc.nvim by: yarn install
+```
+
+[解决方案](https://blog.csdn.net/qq_34548075/article/details/120092169)
+
+```bash
+sudo npm install -g yarn
+cd ~/.vim/plugged/coc.nvim/
+yarn install
+yarn build
+```
+
+2. 若报错
+
+```
+[coc.nvim] Error: Error on execute :pyx command, ultisnips feature of coc-snippets requires pyx support on vim.
+```
+
+a. [ubuntu18.04安装python3.7](https://blog.csdn.net/JohnJim0/article/details/108226362)
+
+ubuntu18.04
+```bash
+apt-get update
+sudo apt-get -y install python3.7
+```
+
+ubuntu16.04
+```bash
+apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev wget libbz2-dev
+cd /opt
+#wget https://www.python.org/ftp/python/3.7.5/Python-3.7.5.tgz
+wget https://www.python.org/downloads/release/python-375/
+tar -xzvf Python-3.7.5.tgz
+cd Python-3.7.5
+./configure --enable-optimizations
+make
+make install
+```
+
+b. 切换
+
+```bash
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
+#sudo update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.7 2
+sudo update-alternatives --config python3
+python3 -m pip install pip
+```
+
+3. 若报错
 
 ```
 [coc.nvim] Unable to load global extension at /home/xxx/.config/coc/extensions/node_modules/coc-ccls: main file ./lib/extension.js not found, you may need to build the project
@@ -241,6 +296,8 @@ ln -s $(pwd)/coc-settings.json ~/.vim/
 cd ~/.config/coc/extensions/node_modules/coc-ccls
 ln -s node_modules/ws/lib lib
 ```
+
+---
 
 ```bash
 cd src/
