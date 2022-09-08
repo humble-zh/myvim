@@ -190,16 +190,16 @@ endsnippet
 
 snippet print "print function" b
 function(print)
-    foreach(var ${ARGN})
-        message("${var} = ${${var}}")
+    foreach(var \${ARGN})
+        message("\${var} = \${${var}}")
     endforeach()
 endfunction()
 endsnippet
 
 snippet print_env "print_env function" b
 function(print_env)
-    foreach(var ${ARGN})
-        message("${var} = $ENV{${var}}")
+    foreach(var \${ARGN})
+        message("\${var} = \$ENV{\${var}}")
     endforeach()
 endfunction()
 endsnippet
