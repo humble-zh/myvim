@@ -1080,6 +1080,37 @@ mosquitto_lib_cleanup();
 endsnippet
 
 
+snippet obj.h "obj header" b
+#ifndef __OBJ_H__
+#define __OBJ_H__
+#include <errno.h>
+#include "l.h"
+
+#define L4ERRINFO (1024)
+
+//method call 调用obj->func(args...)
+#define mcall(obj, func, args...) ({\
+    int _rc = 0;\
+    if(!obj){ _rc = -EINVAL; } \
+    else if(!obj->func){ _rc = -ENOSYS; } \
+    else { _rc = obj->func(obj, ##args); } \
+    (_rc);\
+})
+
+#define obj_new(typestr) do{\
+    typestr *_ptr = calloc(1, sizeof(typestr));\
+    if(!_ptr){ le("calloc(%s),%s", #typestr, strerror(errno)); }\
+    return _ptr;\
+}while(0)
+
+#define obj_free(objptr) do{\
+    if(objptr){ li("free(%s:%p)", #objptr, objptr); free(objptr); objptr = NULL; } return 0;\
+}while(0)
+
+#endif //__OBJ_H__
+endsnippet
+
+
 snippet setitimer "setitimer()" b
 static volatile int loop = 0;
 
