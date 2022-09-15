@@ -1111,6 +1111,76 @@ snippet obj.h "obj header" b
 endsnippet
 
 
+snippet class.h "class header" b
+#ifndef __${1:CLASS}_H__
+#define __$1_H__
+#include <stdint.h>
+#include "obj.h"
+
+typedef enum{
+    $1ERRNO_OK = 0,
+    $1ERRNO_UNKNOWN,
+}$2errno_t;
+//传入整数$2errno_t，返回错误对应的字符串(不用你free它)
+extern const char *$2_strerror(int $2errno);
+
+
+typedef struct _$2_t ${2:class}_t;
+// 成员函数应该返回错误码 $2errno_t
+typedef int (*f_get_sth_t)($2_t *vpthis, char *sth, uint8_t l4sth);
+typedef int (*f_set_sth_t)($2_t *vpthis, const char *sth);
+struct _$2_t{
+    char sth[16];
+    ${0}
+    f_get_sth_t m_get_sth;
+    f_set_sth_t m_set_sth;
+};
+extern $2_t *$2_new(void);
+extern int $2_init($2_t *$2/*, const char *model*/);
+extern int $2_destroy($2_t *$2);
+
+#endif //__$1_H__
+endsnippet
+
+
+snippet class.c "class source" b
+${2:class}
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+
+#include "icgdev_lzhpc.h"
+#include "$2.h"
+#include "lib.h"
+
+
+const char *$2_strerror(int $2errno)
+{
+    if($2errno < 0) { return strerror(-$2errno); }
+    switch ($2errno) {
+    case ${1:CLASS}ERRNO_OK: return "ok";
+    case $1ERRNO_UNKNOWN:
+    default: return "unknow $2 errno";
+    }
+    return NULL;
+}
+
+${2:class}_t *$2_new(void) { obj_new($2_t); }
+
+int $2_init($2_t *$2/*, const char *model*/)
+{
+    check_arg_null($2); check_arg_null(model);
+    $2->m_get_sth = NULL; //lzhpc_get_sth;
+    $2->m_set_sth = NULL; //lzhpc_set_sth;
+    return 0;
+}
+
+int $2_destroy($2_t *$2) { obj_free($2); }
+endsnippet
+
+
 snippet setitimer "setitimer()" b
 static volatile int loop = 0;
 
