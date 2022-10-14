@@ -26,7 +26,7 @@ endsnippet
 
 snippet calloc "calloc()" b
 ${1:type_t} *${4:pointer} = calloc(${3:1}, ${2:sizeof($1)});
-if($4 == NULL){ l_e("calloc($1),%s", strerror(errno));${5: return -1;} }
+if($4 == NULL){ l_e("calloc($1),%d.%s", errno, strerror(errno));${5: return -1;} }
 
 ${0}
 
@@ -36,7 +36,7 @@ endsnippet
 
 snippet malloc "malloc()" b
 ${1:type_t} *${3:pointer} = malloc(${2:sizeof($1)});
-if($3 == NULL){ l_e("malloc($1),%s", strerror(errno));${4: return -1;} }
+if($3 == NULL){ l_e("malloc($1),%d.%s", errno, strerror(errno));${4: return -1;} }
 memset($3, 0, $2);
 
 ${0}
@@ -50,8 +50,8 @@ snippet open "open()" b
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
-int ${3:fd} = open(${1:pathname}, ${2:O_RDWR});
-if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
+int ${3:fd} = open(${1:pathname}, ${2:O_RDWR}|O_CLOEXEC);
+if($3 < 0){ l_e("open(%s),%d.%s", $1, errno, strerror(errno));${4: return -1;} }
 
 ${0}
 
@@ -63,12 +63,12 @@ snippet openr "openreadonly()" b
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
-int ${3:fd} = open(${1:pathname}, ${2:O_RDONLY});
-if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
+int ${3:fd} = open(${1:pathname}, ${2:O_RDONLY}|O_CLOEXEC);
+if($3 < 0){ l_e("open(%s),%d.%s", $1, errno, strerror(errno));${4: return -1;} }
 
 char ${5:buff}[1024] = {0};
 int ${7:len} = read($3, $5, ${6:sizeof($5)});
-if($7 <= 0){ l_e("read(%d:%s)->%d,%s", $3, $1, $7, strerror(errno));${8: goto readerr;} }
+if($7 <= 0){ l_e("read(%d:%s)->%d,%d.%s", $3, $1, $7, errno, strerror(errno));${8: goto readerr;} }
 l_d("read(%d:%s,%s)->%d", $3, $1, $5, $7);
 ${0}
 
@@ -81,12 +81,12 @@ snippet openw "openwriteonly()" b
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
-int ${3:fd} = open(${1:pathname}, ${2:O_WRONLY});
-if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
+int ${3:fd} = open(${1:pathname}, ${2:O_WRONLY}|O_CLOEXEC);
+if($3 < 0){ l_e("open(%s),%d.%s", $1, errno, strerror(errno));${4: return -1;} }
 
 char ${5:buff}[1024] = {0};
 int ${7:len} = write($3, $5, ${6:strlen($5)});
-if($7 <= 0){ l_e("write(%d:%s)->%d,%s", $3, $1, $7, strerror(errno));${8: goto writeerr;} }
+if($7 <= 0){ l_e("write(%d:%s)->%d,%d.%s", $3, $1, $7, errno, strerror(errno));${8: goto writeerr;} }
 l_d("write(%d:%s,%s)->%d", $3, $1, $5, $7);
 ${0}
 
@@ -99,17 +99,17 @@ snippet openrw "openreadwrite()" b
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
-int ${3:fd} = open(${1:pathname}, ${2:O_RDWR});
-if($3 < 0){ l_e("open(%s),%s", $1, strerror(errno));${4: return -1;} }
+int ${3:fd} = open(${1:pathname}, ${2:O_RDWR}|O_CLOEXEC);
+if($3 < 0){ l_e("open(%s),%d.%s", $1, errno, strerror(errno));${4: return -1;} }
 
-if(write($3, ${5:buff}, ${6:strlen($5)}) < 0){ l_e("write(%d:%s,%s),%s", $3, $1, $5, strerror(errno)); ${7: goto writeerr;} }
+if(write($3, ${5:buff}, ${6:strlen($5)}) < 0){ l_e("write(%d:%s,%s),%d.%s", $3, $1, $5, errno, strerror(errno)); ${7: goto writeerr;} }
 l_d("write(%d:%s,%s)", $3, $1, $5);
 
-if(lseek($3, 0, SEEK_SET) < 0){ l_e("lseek(%d:%s),%s", $3, $1, strerror(errno));${8: goto lseekerr;} }
+if(lseek($3, 0, SEEK_SET) < 0){ l_e("lseek(%d:%s),%d.%s", $3, $1, errno, strerror(errno));${8: goto lseekerr;} }
 
 char ${9:buff}[1024] = {0};
 int ${11:len} = read($3, $9, ${10:sizeof($9)});
-if($11 <= 0){ l_e("read(%d:%s)->%d,%s", $3, $1, $11, strerror(errno));${12: goto readerr;} }
+if($11 <= 0){ l_e("read(%d:%s)->%d,%d.%s", $3, $1, $11, errno, strerror(errno));${12: goto readerr;} }
 l_d("read(%d:%s,%s)->%d", $3, $1, $9, $11);
 ${0}
 
@@ -120,7 +120,7 @@ if($3 >= 0){ close($3); $3 = -1; }
 endsnippet
 
 snippet lseek "lseek()" b
-if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(%d,$3,$2),%s", $1, strerror(errno));${6: goto lseekerr;} }
+if(lseek(${1:fd}, ${3:0}, ${2:SEEK_SET}) < 0){ l_e("lseek(%d,$3,$2),%d.%s", $1, errno, strerror(errno));${6: goto lseekerr;} }
 l_d("lseek(%d,$3,$2),ok", $1);
 ${0}
 $6
@@ -130,7 +130,7 @@ endsnippet
 snippet read "read()" b
 char $2[1024] = {0};
 int ${4:len} = read(${1:fd}, ${2:buff}, ${3:sizeof($2)});
-if($4 <= 0){ l_e("read(%d,$2)->%d,%s", $1, $4, strerror(errno));${7: goto readerr;} }
+if($4 <= 0){ l_e("read(%d,$2)->%d,%d.%s", $1, $4, errno, strerror(errno));${7: goto readerr;} }
 l_d("read(%d,%s)->%d", $1, $2, $4);
 ${0}
 $7
@@ -140,7 +140,7 @@ snippet write "write()" b
 char $2[1024] = {0};
 sprintf($2, "hello");
 int ${4:len} = write(${1:fd}, ${2:buff}, ${3:strlen($2)});
-if($4 <= 0){ l_e("write(%d,$2)->%d,%s", $1, $4, strerror(errno));${5: goto writeerr;} }
+if($4 <= 0){ l_e("write(%d,$2)->%d,%d.%s", $1, $4, errno, strerror(errno));${5: goto writeerr;} }
 l_d("write(%d,${6:%s},%d)->%d", $1, ${7:buff}, $3, $4);
 ${0}
 $5
@@ -167,13 +167,13 @@ static pthread_mutex_t ${5:workmutex} = PTHREAD_MUTEX_INITIALIZER;
 
 //入队
 $1 *node = calloc(1, sizeof($1));
-if(node == NULL){ l_e("calloc($1),%s", strerror(errno)); goto callocnodeerr; }
+if(node == NULL){ l_e("calloc($1),%d.%s", errno, strerror(errno)); goto callocnodeerr; }
 l_d("calloc(node)->%p", node);
 
 sprintf(node->key, "hello"); //TODO
 node->len = 1024;
 node->buff = calloc(1, node->len);
-if(node->buff == NULL){ l_e("calloc(node->buff),%s", strerror(errno)); goto callocnodebufferr; }
+if(node->buff == NULL){ l_e("calloc(node->buff),%d.%s", errno, strerror(errno)); goto callocnodebufferr; }
 l_d("calloc(node->buff:%d)->%p", node->len, node->buff);
 memcpy(node->buff, /*TODO*/, node->len);
 
@@ -225,7 +225,7 @@ endsnippet
 
 snippet popen "popen()" b
 FILE *p = popen("${1:ifconfig eth0.1|grep 'HWaddr'|awk '{print $5}'|tr -d ':'}", "r");
-if(!p){ l_e("popen(),'%s'", strerror(errno)); goto popenerr; }
+if(!p){ l_e("popen(),'%d.%s'", errno, strerror(errno)); goto popenerr; }
 int len = fread(${2:prbuff}, 1, ${3:sizeof($2)}, p);
 if(p){ pclose(p); p = NULL; }
 if(len <= 0){ l_e("fread(%s)->%d,failed", $2, len); }
@@ -240,7 +240,7 @@ char rbuff[LEN4BUFF] = {0};
 int len = read(${1:fd}, rbuff, sizeof(rbuff));
 if(len < 0){
 	if(errno == EINTR){ ${2:continue;} }
-	l_e("read(%d)->%d,%s", $1, len, strerror(errno));
+	l_e("read(%d)->%d,%d.%s", $1, len, errno, strerror(errno));
 	goto readerr;
 }
 else if(len == 0){ l_i("read(%d)->0,EOF", $1); }
@@ -254,7 +254,7 @@ endsnippet
 snippet recvfrom "recvfrom()" b
 char rbuff[LEN4BUFF] = {0};
 int len = recvfrom(${1:fd}, rbuff, sizeof(rbuff), 0, (void *)&raddr, &raddr_len);
-if(len < 0) { l_e("recvfrom(%d)->%d,%s", $1, len, strerror(errno)); goto recvfromerr; }
+if(len < 0) { l_e("recvfrom(%d)->%d,%d.%s", $1, len, errno, strerror(errno)); goto recvfromerr; }
 else if(len == 0) { ${2:continue;} }
 ${0:TODO}
 recvfromerr:
@@ -272,7 +272,7 @@ while(cnt--){
 	if(rc == 0){ l_e("Timeout"); continue; }
 	else if(rc < 0){
 		if(errno == EINTR){ continue; }
-		l_e("select(%d)->%d,%s", $2, rc, strerror(errno));
+		l_e("select(%d)->%d,%d.%s", $2, rc, errno, strerror(errno));
 		goto selecterr;
 	}
 	if(FD_ISSET($2, &(rset))){
@@ -280,7 +280,7 @@ while(cnt--){
 		int len = read($2, rbuff, sizeof(rbuff));
 		if(len < 0){
 			if(errno == EINTR){ continue; }
-			l_e("read(%d)->%d,%s", $2, len, strerror(errno));
+			l_e("read(%d)->%d,%d.%s", $2, len, errno, strerror(errno));
 			goto readerr;
 		}
 		else if(len == 0){ l_i("read(%d)->0,EOF", $2); }
@@ -333,8 +333,8 @@ endsnippet
 
 snippet socketudpclient "socketudpclient()" b
 int ret = -1;
-int ${1:sd} = socket(AF_INET, SOCK_DGRAM, 0/*IPPROTO_UDP*/);
-if($1 < 0){ l_e("socket(),%s", strerror(errno)); ${2:goto socketerr;} }
+int ${1:sd} = socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC, 0/*IPPROTO_UDP*/);
+if($1 < 0){ l_e("socket(),%d.%s", errno, strerror(errno)); ${2:goto socketerr;} }
 
 struct sockaddr_in raddr;
 raddr.sin_family = AF_INET;
@@ -342,7 +342,7 @@ raddr.sin_port = htons(${3:12000});
 inet_pton(AF_INET, "${4:RemoteIP}", &raddr.sin_addr);
 
 const char *wbuff = "helloworld";
-if(sendto($1, wbuff, strlen(wbuff), 0, (void *)&raddr, sizeof(raddr)) < 0){ l_e("sendto(%d,%s),%s", $1, wbuff, strerror(errno)); goto sendtoerr; }
+if(sendto($1, wbuff, strlen(wbuff), 0, (void *)&raddr, sizeof(raddr)) < 0){ l_e("sendto(%d,%d.%s),%s", $1, wbuff, errno, strerror(errno)); goto sendtoerr; }
 
 socklen_t raddr_len = sizeof(raddr);
 int cnt = 3;
@@ -353,12 +353,12 @@ while(cnt--){
 	FD_SET($1, &rset);
 	if(select($1 + 1, &rset, NULL, NULL, &timeout) < 0){
 		if(errno == EINTR){ continue; }
-		l_e("select(%d),%s", $1, strerror(errno)); goto selecterr;
+		l_e("select(%d),%d.%s", $1, errno, strerror(errno)); goto selecterr;
 	}
 	if(FD_ISSET($1, &(rset))){
 		int len = recvfrom($1, ${5:rbuff}, ${6:sizeof(rbuff)}, 0, (void *)&raddr, &raddr_len);
 		if(len == 0) { continue; }
-		if(len < 0) { l_e("recvfrom(%d),%s", $1, strerror(errno)); goto recvfromerr; }
+		if(len < 0) { l_e("recvfrom(%d),%d.%s", $1, errno, strerror(errno)); goto recvfromerr; }
 		else{ ret = 0; break; }
 	}
 }
@@ -375,14 +375,14 @@ endsnippet
 
 snippet socketudpserver "socketudpserver()" b
 //创建UDP服务端
-int ${1:sd} = socket(AF_INET, SOCK_DGRAM, 0/*IPPROTO_UDP*/);
-if($1 < 0){ l_e("socket() %s", strerror(errno)); exit(1); }
+int ${1:sd} = socket(AF_INET, SOCK_DGRAM|SOCK_CLOEXEC, 0/*IPPROTO_UDP*/);
+if($1 < 0){ l_e("socket(),%d.%s", errno, strerror(errno)); exit(1); }
 
 struct sockaddr_in laddr,raddr;
 laddr.sin_family = AF_INET;
 laddr.sin_port = htons(${2:12000});
 inet_pton(AF_INET, "0.0.0.0", &laddr.sin_addr);
-if(bind($1, (void *)&laddr, sizeof(laddr)) < 0){ l_e("bind($2),%s", strerror(errno)); exit(1); }
+if(bind($1, (void *)&laddr, sizeof(laddr)) < 0){ l_e("bind($2),%d.%s", errno, strerror(errno)); exit(1); }
 
 char buff[BUFFLEN] = {0};
 socklen_t raddr_len = sizeof(raddr);
@@ -395,13 +395,13 @@ while(1){
 	FD_SET($1, &rset);
 	if(select($1 + 1, &rset, NULL, NULL, &timeout) < 0){
 		if(errno == EINTR){ continue; }
-		l_e("select(%d) %s", $1, strerror(errno)); exit(1);
+		l_e("select(%d),%d.%s", $1, errno, strerror(errno)); exit(1);
 	}
 	if(FD_ISSET($1, &(rset))){
 		memset(buff, 0, BUFFLEN);
 		len = recvfrom($1, buff, BUFFLEN, 0, (void *)&raddr, &raddr_len);
 		if(len == 0) { continue; }
-		if(len < 0) { l_e("recvfrom(%d) %s", $1, strerror(errno)); exit(1); }
+		if(len < 0) { l_e("recvfrom(%d),%d.%s", $1, errno, strerror(errno)); exit(1); }
 
 		char ipstr[INET_ADDRSTRLEN] = {0};
 		inet_ntop(AF_INET, &raddr.sin_addr, ipstr, INET_ADDRSTRLEN);
@@ -415,24 +415,24 @@ endsnippet
 
 snippet sockettcpclient "sockettcpclient()" b
 int ret = -1;
-int ${1:sd} = socket(AF_INET, SOCK_STREAM, 0/* IPPROTO_TCP,IPPROTO_SCTP */);
-if($1 < 0){ l_e("socket(),%s", strerror(errno)); ${2:goto socketerr;} }
+int ${1:sd} = socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, 0/* IPPROTO_TCP,IPPROTO_SCTP */);
+if($1 < 0){ l_e("socket(),%d.%s", errno, strerror(errno)); ${2:goto socketerr;} }
 
 //bind()可省
 int val = 1;
-if(setsockopt($1, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) < 0){ l_e("setsockopt(%d),%s", $1, strerror(errno)); goto setsockopterr; }
+if(setsockopt($1, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)) < 0){ l_e("setsockopt(%d),%d.%s", $1, errno, strerror(errno)); goto setsockopterr; }
 struct sockaddr_in laddr;
 laddr.sin_family = AF_INET;
 laddr.sin_port = htons(${2:12000});
 laddr.sin_addr.s_addr = htonl(INADDR_ANY); //inet_pton(AF_INET, "0.0.0.0", &laddr.sin_addr);
-if(bind($1, (void *)&laddr, sizeof(laddr)) < 0){ l_e("bind(%d),%s", $1, strerror(errno0); goto binderr; }
+if(bind($1, (void *)&laddr, sizeof(laddr)) < 0){ l_e("bind(%d),%d.%s", $1, errno, strerror(errno); goto binderr; }
 
 struct sockaddr_in raddr;
 raddr.sin_family = AF_INET;
 raddr.sin_port = htons(${3:12000});
 inet_pton(AF_INET, "${4:RemoteIP}", &raddr.sin_addr);
 
-if(connect($1, (void *)&raddr, sizeof(raddr)) < 0){ l_e("connect(%d:$4:$3),%s", $1, strerror(errno)); goto connecterr; }
+if(connect($1, (void *)&raddr, sizeof(raddr)) < 0){ l_e("connect(%d:$4:$3),%d.%s", $1, errno,  strerror(errno)); goto connecterr; }
 
 ${0://read and write}
 
@@ -490,7 +490,7 @@ int main(int argc, char **argv)
 	if (check_pid(pid_file)) {
 		old_pid = read_pid(pid_file);
 		if (need_stop) {
-			if(kill(old_pid, SIGTERM) < 0){ fprintf(stderr, "kill():%s\n", strerror(errno)); }
+			if(kill(old_pid, SIGTERM) < 0){ fprintf(stderr, "kill():%d.%s\n", errno, strerror(errno)); }
 			else { printf(PROG " (%d) Stop.\n", old_pid); }
 		}
 		else {
@@ -1099,7 +1099,7 @@ snippet obj.h "obj header" b
 
 #define obj_new(typestr) do{\
     typestr *_ptr = calloc(1, sizeof(typestr));\
-    if(!_ptr){ le("calloc(%s),%s", #typestr, strerror(errno)); }\
+    if(!_ptr){ le("calloc(%s),%d.%s", #typestr, errno, strerror(errno)); }\
     return _ptr;\
 }while(0)
 
