@@ -312,23 +312,3 @@ bear -- make
 查看已安装`:CocList extensions`
 
 更新命令`:CocUpdate`
-
-
-
-
----
-
-## (NO)安装[YouCompleteMe](https://github.com/ycm-core/YouCompleteMe)
-
-```bash
-cd ~/.vim/plugged/YouCompleteMe
-python3 install.py --clang-completer
-```
-
-```bash
-ln -s $(pwd)/ycm_extra_conf.py ~/.ycm_extra_conf.py
-```
-
-```bash
-pip3 install neovim
-```
