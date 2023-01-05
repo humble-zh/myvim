@@ -16,7 +16,7 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 ```
 
-如果出现 `Failed to connect to raw.githubusercontent.com port 443: Connection refused` ,就在/etc/hosts文件追加
+如果出现 `Failed to connect to raw.githubusercontent.com port 443: Connection refused` ,就去[https://site.ip138.com/raw.githubusercontent.com/](https://site.ip138.com/raw.githubusercontent.com/)找到它的ip，在/etc/hosts文件追加
 
 ```bash
 199.232.28.133 raw.githubusercontent.com
