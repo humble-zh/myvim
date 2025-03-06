@@ -107,6 +107,7 @@ iab xtime <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
 " iab xtime <c-r>=strftime("%Y-%m-%d %H:%M")<cr>
 
 " markdown
+noremap <LEADER>lp :PrevimOpen<CR>
 noremap <LEADER>cr i## C->R 0x
 noremap <LEADER>rc i## R->C 0x
 noremap <LEADER>s2 i&emsp;&emsp;<ESC>
