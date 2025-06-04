@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git config credential.helper 'store --file /home/zh/li/.github-humble-credentials'
+
 f=~/.vim/autoload/plug.vim
 [ -f $f ] && echo "$f ok" || { curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim; }
 
