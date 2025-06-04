@@ -1,5 +1,7 @@
 #!/bin/bash
 
+git config --global core.quotepath false
+git config user.name "humble-zh"; git config user.email "humble_zh@163.com";
 git config credential.helper 'store --file /home/zh/li/.github-humble-credentials'
 
 f=~/.vim/autoload/plug.vim
